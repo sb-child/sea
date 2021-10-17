@@ -27,10 +27,7 @@ require (
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
 
-require (
-	github.com/ProtonMail/gopenpgp/v2 v2.2.4
-	github.com/davecgh/go-spew v1.1.1 // indirect
-)
+require github.com/ProtonMail/gopenpgp/v2 v2.2.4
 
 require (
 	github.com/ProtonMail/go-crypto v0.0.0-20210920160938-87db9fbc61c7 // indirect

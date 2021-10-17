@@ -15,8 +15,12 @@ func init() {
 		group.ALL("login", api.Hello)
 	}
 	// water
+	v1WaterAuthAdd := func(group *ghttp.RouterGroup) {
+		group.POST("1", api.Water.VerifyID)
+		group.POST("2", api.Water.VerifyID)
+	}
 	v1WaterAuth := func(group *ghttp.RouterGroup) {
-		group.POST("invite", api.Water.VerifyID)
+		group.Group("add", v1WaterAuthAdd)
 		group.POST("login", api.Water.VerifyID)
 	}
 	v1WaterSync := func(group *ghttp.RouterGroup) {
