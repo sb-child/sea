@@ -17,10 +17,10 @@ func init() {
 	// water
 	v1WaterAuth := func(group *ghttp.RouterGroup) {
 		group.POST("invite", api.Water.VerifyID)
-		group.POST("verify", api.Water.VerifyID)
+		group.POST("login", api.Water.VerifyID)
 	}
 	v1WaterSync := func(group *ghttp.RouterGroup) {
-		group.POST("invite", api.Water.VerifyID)
+		group.POST("event", api.Water.VerifyID)
 		group.POST("verify", api.Water.VerifyID)
 	}
 	v1Water := func(group *ghttp.RouterGroup) {
@@ -28,9 +28,8 @@ func init() {
 		group.Group("sync/", v1WaterSync)
 	}
 	// main router
+	root.GET("version", api.GetVersion)
 	root.Group("v1/", func(group *ghttp.RouterGroup) {
-		group.ALL("version", api.GetVersion)
-		group.ALL("hello", api.Hello)
 		group.Group("water/", v1Water)
 		group.Group("user/", v1User)
 	})
