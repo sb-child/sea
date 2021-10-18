@@ -17,6 +17,7 @@ type WaterInviteStep1Req struct {
 }
 
 type WaterInviteStep1Resp struct {
+	ReturnCode                 int    `json:"returnCode"`
 	EncryptedReceiverPublicKey string `json:"receiver"`
 }
 
@@ -26,6 +27,18 @@ type WaterInviteStep2Req struct {
 }
 
 type WaterInviteStep2Resp struct {
+	ReturnCode int `json:"returnCode"`
+}
+
+const (
+	WATER_INVITE_RETURN_CODE_SUCCESS = 0
+	WATER_INVITE_RETURN_CODE_DECRYPTION_FAILED = 1
+	WATER_INVITE_RETURN_CODE_SESSION_NOT_FOUND = 2
+)
+
+func WaerInviteApiMiddleware(r *ghttp.Request) {
+	r.Middleware.Next()
+
 }
 
 func (*waterInviteApi) VerifyID(r *ghttp.Request) {
