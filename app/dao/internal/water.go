@@ -27,6 +27,7 @@ type WaterColumns struct {
 	CreatedAt  string //
 	UpdatedAt  string //
 	Banned     string //
+	Url        string //
 }
 
 //  waterColumns holds the columns for table water.
@@ -39,6 +40,7 @@ var waterColumns = WaterColumns{
 	CreatedAt:  "created_at",
 	UpdatedAt:  "updated_at",
 	Banned:     "banned",
+	Url:        "url",
 }
 
 // NewWaterDao creates and returns a new DAO object for table data access.

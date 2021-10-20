@@ -47,6 +47,24 @@ func WaterInviteApiMiddleware(r *ghttp.Request) {
 
 }
 
+func (*waterInviteApi) Step1(r *ghttp.Request) {
+	var req *WaterInviteStep1Req
+	r.Parse(req)
+
+	// w, _ := service.Water.GetSelfWater()
+
+	r.Response.WriteJson(WaterInviteStep1Resp{})
+}
+
+func (*waterInviteApi) Step2(r *ghttp.Request) {
+	var req *WaterInviteStep2Req
+	r.Parse(req)
+
+	// w, _ := service.Water.GetSelfWater()
+
+	r.Response.WriteJson(WaterInviteStep2Resp{})
+}
+
 func (*waterInviteApi) VerifyID(r *ghttp.Request) {
 	var req *WaterInviteStep1Req
 	r.Parse(req)

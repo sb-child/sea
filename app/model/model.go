@@ -23,6 +23,7 @@ type Water struct {
 	CreatedAt  *gtime.Time `orm:"created_at"  json:"createdAt"  description:""`
 	UpdatedAt  *gtime.Time `orm:"updated_at"  json:"updatedAt"  description:""`
 	Banned     bool        `orm:"banned"      json:"banned"     description:""`
+	Url        string      `orm:"url"         json:"url"        description:""`
 }
 
 // WaterInvite is the golang structure for table water_invite.
