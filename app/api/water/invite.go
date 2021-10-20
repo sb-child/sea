@@ -7,6 +7,9 @@ import (
 	"github.com/gogf/gf/net/ghttp"
 )
 
+// invite api
+// [a water joined] -> review by admin
+
 var WaterInvite = waterInviteApi{}
 
 type waterInviteApi struct{}
@@ -22,7 +25,7 @@ type WaterInviteStep1Resp struct {
 }
 
 type WaterInviteStep2Req struct {
-	EncryptedRandomString string `json:"random"`
+	EncryptedRandomString string `json:"random"` // a 32 character random string
 	Session               string `json:"session"`
 }
 
@@ -31,12 +34,15 @@ type WaterInviteStep2Resp struct {
 }
 
 const (
-	WATER_INVITE_RETURN_CODE_SUCCESS = 0
-	WATER_INVITE_RETURN_CODE_DECRYPTION_FAILED = 1
-	WATER_INVITE_RETURN_CODE_SESSION_NOT_FOUND = 2
+	INVITE_RETURN_CODE_SUCCESS           = 0
+	INVITE_RETURN_CODE_DECRYPTION_FAILED = 1
+	INVITE_RETURN_CODE_SESSION_NOT_FOUND = 2
+	INVITE_RETURN_CODE_BAD_KEY           = 3
+	INVITE_RETURN_CODE_BAD_RANDOM_STRING = 4
+	INVITE_RETURN_CODE_ALREADY_EXISTS    = 5
 )
 
-func WaerInviteApiMiddleware(r *ghttp.Request) {
+func WaterInviteApiMiddleware(r *ghttp.Request) {
 	r.Middleware.Next()
 
 }

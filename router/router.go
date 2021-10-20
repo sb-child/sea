@@ -2,6 +2,7 @@ package router
 
 import (
 	"sea/app/api"
+	waterApi "sea/app/api/water"
 
 	"github.com/gogf/gf/frame/g"
 	"github.com/gogf/gf/net/ghttp"
@@ -15,12 +16,13 @@ func init() {
 		group.ALL("login", api.Hello)
 	}
 	// water
-	v1WaterAuthAdd := func(group *ghttp.RouterGroup) {
-		group.POST("1", api.Water.VerifyID)
-		group.POST("2", api.Water.VerifyID)
+	v1WaterJoin := func(group *ghttp.RouterGroup) {
+		group.Middleware(waterApi.WaterInviteApiMiddleware)
+		group.POST("1", waterApi.WaterInvite.VerifyID)
+		group.POST("2", waterApi.WaterInvite.VerifyID)
 	}
 	v1WaterAuth := func(group *ghttp.RouterGroup) {
-		group.Group("add", v1WaterAuthAdd)
+		group.Group("join", v1WaterJoin)
 		group.POST("login", api.Water.VerifyID)
 	}
 	v1WaterSync := func(group *ghttp.RouterGroup) {
