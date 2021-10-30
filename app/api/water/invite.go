@@ -2,6 +2,7 @@ package api
 
 import (
 	"sea/app/service"
+	serviceWater "sea/app/service/water"
 
 	"github.com/ProtonMail/gopenpgp/v2/crypto"
 	"github.com/gogf/gf/frame/g"
@@ -63,7 +64,15 @@ func (*waterInviteApi) Step1(r *ghttp.Request) {
 
 	// generate a session
 
-	r.Response.WriteJson(WaterInviteStep1Resp{})
+	// encrypt receiver's public key and session
+	session, err := serviceWater.WaterInvite.CreateSession()
+
+	// fill the response
+	r.Response.WriteJson(WaterInviteStep1Resp{
+		Session:                    session,
+		EncryptedReceiverPublicKey: "",
+		ReturnCode:                 INVITE_RETURN_CODE_SUCCESS,
+	})
 }
 
 func (*waterInviteApi) Step2(r *ghttp.Request) {
