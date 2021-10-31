@@ -4,7 +4,7 @@ import (
 	"sea/app/dao"
 	"sea/app/model"
 
-	"github.com/gogf/gf/util/grand"
+	"github.com/gogf/gf/v2/util/grand"
 )
 
 var Water = waterService{}

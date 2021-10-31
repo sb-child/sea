@@ -6,8 +6,8 @@ package internal
 
 import (
 	"context"
-	"github.com/gogf/gf/database/gdb"
-	"github.com/gogf/gf/frame/g"
+	"github.com/gogf/gf/v2/database/gdb"
+	"github.com/gogf/gf/v2/frame/g"
 )
 
 // WaterInviteDao is the manager for logic model data accessing and custom defined data operations functions management.
@@ -19,16 +19,16 @@ type WaterInviteDao struct {
 
 // WaterInviteColumns defines and stores column names for table water_invite.
 type WaterInviteColumns struct {
-	InviteCode  string //
-	BindWaterId string //
-	CreatedAt   string //
+	Session         string //
+	SenderPublicKey string //
+	CreatedAt       string //
 }
 
 //  waterInviteColumns holds the columns for table water_invite.
 var waterInviteColumns = WaterInviteColumns{
-	InviteCode:  "invite_code",
-	BindWaterId: "bind_water_id",
-	CreatedAt:   "created_at",
+	Session:         "session",
+	SenderPublicKey: "sender_public_key",
+	CreatedAt:       "created_at",
 }
 
 // NewWaterInviteDao creates and returns a new DAO object for table data access.

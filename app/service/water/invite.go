@@ -1,19 +1,31 @@
 package service
 
 import (
-	"github.com/gogf/gf/os/gtime"
+	"context"
+	"sea/app/dao"
+	"sea/app/model"
+
+	"github.com/gogf/gf/v2/os/gtime"
+	"github.com/gogf/gf/v2/util/grand"
 )
 
-var WaterInvite = waterInviteService{}
+var ctx = context.Background()
+
+var WaterInvite = waterInviteService{
+	ctx: &ctx,
+}
 
 type waterInviteService struct {
+	ctx *context.Context
 }
 
 func (s *waterInviteService) CreateSession() (string, error) {
-	// result, _ := dao.Water.DB().Model("water").Where("self", true).One()
-	// resultStruct := model.Water{}
-	// err := result.Struct(&resultStruct)
-	return "", nil
+	sessionId := grand.S(64, true)
+	_, err := dao.WaterInvite.Ctx(*s.ctx).Data(model.WaterInvite{
+		Session:         sessionId,
+		SenderPublicKey: "",
+	}).Insert()
+	return sessionId, err
 }
 
 func (s *waterInviteService) SetSessionSender(publicKey string) error {
@@ -29,5 +41,6 @@ func (s *waterInviteService) GetSessionCreateTime(sessionId string) (*gtime.Time
 }
 
 func (s *waterInviteService) DeleteSession(sessionId string) error {
-	return nil
+	_, err := dao.WaterInvite.Ctx(*s.ctx).Where(model.WaterInvite{Session: sessionId}).Delete()
+	return err
 }

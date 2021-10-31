@@ -5,7 +5,7 @@
 package model
 
 import (
-	"github.com/gogf/gf/os/gtime"
+	"github.com/gogf/gf/v2/os/gtime"
 )
 
 // Sea is the golang structure for table sea.
@@ -28,9 +28,9 @@ type Water struct {
 
 // WaterInvite is the golang structure for table water_invite.
 type WaterInvite struct {
-	InviteCode  string      `orm:"invite_code"   json:"inviteCode"  description:""`
-	BindWaterId string      `orm:"bind_water_id" json:"bindWaterId" description:""`
-	CreatedAt   *gtime.Time `orm:"created_at"    json:"createdAt"   description:""`
+	Session         string      `orm:"session"           json:"session"         description:""`
+	SenderPublicKey string      `orm:"sender_public_key" json:"senderPublicKey" description:""`
+	CreatedAt       *gtime.Time `orm:"created_at"        json:"createdAt"       description:""`
 }
 
 // WaterPing is the golang structure for table water_ping.

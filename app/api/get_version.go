@@ -1,8 +1,8 @@
 package api
 
 import (
-	"github.com/gogf/gf/net/ghttp"
-	"github.com/gogf/gf/os/gbuild"
+	"github.com/gogf/gf/v2/net/ghttp"
+	"github.com/gogf/gf/v2/os/gbuild"
 )
 
 var GetVersion = getVersionApi{}
