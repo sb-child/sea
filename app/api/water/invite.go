@@ -39,9 +39,10 @@ const (
 	INVITE_RETURN_CODE_SUCCESS            = 0
 	INVITE_RETURN_CODE_DECRYPTION_FAILED  = 1
 	INVITE_RETURN_CODE_SESSION_NOT_FOUND  = 2
-	INVITE_RETURN_CODE_BAD_KEY            = 3
-	INVITE_RETURN_CODE_BAD_RANDOM_STRING  = 4
-	INVITE_RETURN_CODE_KEY_ALREADY_EXISTS = 5
+	INVITE_RETURN_CODE_SESSION_ERROR      = 3
+	INVITE_RETURN_CODE_BAD_KEY            = 4
+	INVITE_RETURN_CODE_BAD_RANDOM_STRING  = 5
+	INVITE_RETURN_CODE_KEY_ALREADY_EXISTS = 6
 )
 
 func WaterInviteApiMiddleware(r *ghttp.Request) {
@@ -60,12 +61,18 @@ func (*waterInviteApi) Step1(r *ghttp.Request) {
 		})
 		return
 	}
-	// save the public key to database
-
 	// generate a session
+	session, err := serviceWater.WaterInvite.CreateSession()
+	if err != nil {
+		r.Response.WriteJson(WaterInviteStep1Resp{
+			ReturnCode: INVITE_RETURN_CODE_SESSION_ERROR,
+		})
+		return
+	}
+
+	// save the public key and the session to database
 
 	// encrypt receiver's public key and session
-	session, err := serviceWater.WaterInvite.CreateSession()
 
 	// fill the response
 	r.Response.WriteJson(WaterInviteStep1Resp{
