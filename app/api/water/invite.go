@@ -53,25 +53,29 @@ func WaterInviteApiMiddleware(r *ghttp.Request) {
 func (*waterInviteApi) Step1(r *ghttp.Request) {
 	var req *WaterInviteStep1Req
 	r.Parse(req)
+	throw := func(code int) {
+		r.Response.WriteJson(WaterInviteStep1Resp{
+			ReturnCode: code,
+		})
+	}
 	// verify the public key
 	k, err := crypto.NewKeyFromArmored(req.SenderPublicKey)
 	if (err != nil) || (!k.CanVerify()) || (!k.IsPrivate()) || (!k.IsExpired()) {
-		r.Response.WriteJson(WaterInviteStep1Resp{
-			ReturnCode: INVITE_RETURN_CODE_BAD_KEY,
-		})
+		throw(INVITE_RETURN_CODE_BAD_KEY)
 		return
 	}
 	// generate a session
 	session, err := serviceWater.WaterInvite.CreateSession()
 	if err != nil {
-		r.Response.WriteJson(WaterInviteStep1Resp{
-			ReturnCode: INVITE_RETURN_CODE_SESSION_ERROR,
-		})
+		throw(INVITE_RETURN_CODE_SESSION_ERROR)
 		return
 	}
-
 	// save the public key and the session to database
-
+	err = serviceWater.WaterInvite.SetSessionSender(req.SenderPublicKey)
+	if err != nil {
+		throw(INVITE_RETURN_CODE_SESSION_NOT_FOUND)
+		return
+	}
 	// encrypt receiver's public key and session
 
 	// fill the response
