@@ -37,7 +37,12 @@ func (s *waterInviteService) GetSessionSender(sessionId string) (string, error) 
 }
 
 func (s *waterInviteService) GetSessionCreateTime(sessionId string) (*gtime.Time, error) {
-	return gtime.New(), nil
+	var m *model.WaterInvite
+	err := dao.WaterInvite.Ctx(*s.ctx).Where(model.WaterInvite{Session: sessionId}).Scan(&m)
+	if err != nil {
+		return gtime.New(), err
+	}
+	return m.CreatedAt, nil
 }
 
 func (s *waterInviteService) DeleteSession(sessionId string) error {
