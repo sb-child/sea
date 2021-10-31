@@ -71,7 +71,7 @@ func (*waterInviteApi) Step1(r *ghttp.Request) {
 		return
 	}
 	// save the public key and the session to database
-	err = serviceWater.WaterInvite.SetSessionSender(req.SenderPublicKey)
+	err = serviceWater.WaterInvite.SetSessionSender(session, req.SenderPublicKey)
 	if err != nil {
 		throw(INVITE_RETURN_CODE_SESSION_NOT_FOUND)
 		return

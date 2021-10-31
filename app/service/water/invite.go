@@ -28,7 +28,7 @@ func (s *waterInviteService) CreateSession() (string, error) {
 	return sessionId, err
 }
 
-func (s *waterInviteService) SetSessionSender(publicKey string) error {
+func (s *waterInviteService) SetSessionSender(sessionId string, publicKey string) error {
 	return nil
 }
 
