@@ -29,11 +29,17 @@ func (s *waterInviteService) CreateSession() (string, error) {
 }
 
 func (s *waterInviteService) SetSessionSender(sessionId string, publicKey string) error {
-	return nil
+	_, err := dao.WaterInvite.Ctx(*s.ctx).Where(model.WaterInvite{Session: sessionId}).Data(model.WaterInvite{SenderPublicKey: publicKey}).Update()
+	return err
 }
 
 func (s *waterInviteService) GetSessionSender(sessionId string) (string, error) {
-	return "", nil
+	var m *model.WaterInvite
+	err := dao.WaterInvite.Ctx(*s.ctx).Where(model.WaterInvite{Session: sessionId}).Scan(&m)
+	if err != nil {
+		return "", err
+	}
+	return m.Session, nil
 }
 
 func (s *waterInviteService) GetSessionCreateTime(sessionId string) (*gtime.Time, error) {
