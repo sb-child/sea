@@ -43,6 +43,7 @@ const (
 	INVITE_RETURN_CODE_BAD_KEY            = 4
 	INVITE_RETURN_CODE_BAD_RANDOM_STRING  = 5
 	INVITE_RETURN_CODE_KEY_ALREADY_EXISTS = 6
+	INVITE_RETURN_CODE_SERVER_ERROR       = 7
 )
 
 func WaterInviteApiMiddleware(r *ghttp.Request) {
@@ -64,6 +65,11 @@ func (*waterInviteApi) Step1(r *ghttp.Request) {
 		throw(INVITE_RETURN_CODE_BAD_KEY)
 		return
 	}
+	ks := serviceWater.WaterKey.GetKeyStatus(req.SenderPublicKey)
+	if (ks != serviceWater.WATER_KEY_STATUS_NOT_FOUND) || (ks == serviceWater.WATER_KEY_STATUS_WAIT_FOR_RESULT) {
+		throw(INVITE_RETURN_CODE_BAD_KEY)
+		return
+	}
 	// generate a session
 	session, err := serviceWater.WaterInvite.CreateSession()
 	if err != nil {
@@ -77,6 +83,13 @@ func (*waterInviteApi) Step1(r *ghttp.Request) {
 		return
 	}
 	// encrypt receiver's public key and session
+	selfKeyID, err := serviceWater.WaterKey.GetSelfKeyID()
+	if err != nil {
+		throw(INVITE_RETURN_CODE_SERVER_ERROR)
+		return
+	}
+	selfKey, _ := serviceWater.WaterKey.GetKey(selfKeyID)
+	_ = selfKey // todo
 
 	// fill the response
 	r.Response.WriteJson(WaterInviteStep1Resp{
