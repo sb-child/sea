@@ -5,6 +5,7 @@ import (
 	serviceWater "sea/app/service/water"
 
 	"github.com/ProtonMail/gopenpgp/v2/crypto"
+	"github.com/ProtonMail/gopenpgp/v2/helper"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/ghttp"
 )
@@ -61,10 +62,11 @@ func (*waterInviteApi) Step1(r *ghttp.Request) {
 	}
 	// verify the public key
 	k, err := crypto.NewKeyFromArmored(req.SenderPublicKey)
-	if (err != nil) || (!k.CanVerify()) || (k.IsPrivate()) || (k.IsExpired()) {
+	ks, _ := k.Armor()
+	if (err != nil) || (serviceWater.WaterKey.CheckKey(ks, false) != serviceWater.WATER_KEY_CHECK_OK) {
 		throw(INVITE_RETURN_CODE_BAD_KEY)
 	}
-	if ks := serviceWater.WaterKey.GetKeyStatus(req.SenderPublicKey); ks != serviceWater.WATER_KEY_STATUS_NOT_FOUND {
+	if ks := serviceWater.WaterKey.GetKeyStatus(ks); ks != serviceWater.WATER_KEY_STATUS_NOT_FOUND {
 		throw(INVITE_RETURN_CODE_BAD_KEY)
 	}
 	// create a session
@@ -73,7 +75,7 @@ func (*waterInviteApi) Step1(r *ghttp.Request) {
 		throw(INVITE_RETURN_CODE_SESSION_ERROR)
 	}
 	// save the public key and the session to database
-	err = serviceWater.WaterInvite.SetSessionSender(session, req.SenderPublicKey)
+	err = serviceWater.WaterInvite.SetSessionSender(session, ks)
 	if err != nil {
 		throw(INVITE_RETURN_CODE_SESSION_NOT_FOUND)
 	}
@@ -82,8 +84,8 @@ func (*waterInviteApi) Step1(r *ghttp.Request) {
 	if err != nil {
 		throw(INVITE_RETURN_CODE_SERVER_ERROR)
 	}
-	selfKey, _ := serviceWater.WaterKey.GetKey(selfKeyID)
-	_ = selfKey // todo
+	selfKey, _ := serviceWater.WaterKey.GetKey(selfKeyID) // this key has already been checked, so it's safe to continue
+	helper.EncryptMessageArmored(selfKey, "")
 
 	// fill the response
 	r.Response.WriteJson(WaterInviteStep1Resp{
