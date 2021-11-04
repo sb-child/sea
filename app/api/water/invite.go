@@ -6,6 +6,7 @@ import (
 
 	"github.com/ProtonMail/gopenpgp/v2/crypto"
 	"github.com/ProtonMail/gopenpgp/v2/helper"
+	"github.com/gogf/gf/encoding/gparser"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/ghttp"
 )
@@ -57,7 +58,12 @@ func WaterInviteApiMiddleware(r *ghttp.Request) {
 
 }
 
-func (*waterInviteApi) Step1(r *ghttp.Request) {
+func (*waterInviteApi) MakeStep1Pack(session, key string) string {
+	r := gparser.New(WaterInviteStep1Pack{Session: session, ReceiverPublicKey: key})
+	return r.MustToJsonString()
+}
+
+func (api *waterInviteApi) Step1(r *ghttp.Request) {
 	var req *WaterInviteStep1Req
 	r.Parse(req)
 	throw := func(code int) {
@@ -90,16 +96,14 @@ func (*waterInviteApi) Step1(r *ghttp.Request) {
 		throw(INVITE_RETURN_CODE_SERVER_ERROR)
 	}
 	selfKey, _ := serviceWater.WaterKey.GetKey(selfKeyID) // this key has already been checked, so it's safe to continue
-	es, err := helper.EncryptMessageArmored(selfKey, "")
-	_ = es // todo
+	es, err := helper.EncryptMessageArmored(selfKey, api.MakeStep1Pack(session, selfKey))
 	if err != nil {
 		throw(INVITE_RETURN_CODE_SERVER_ERROR)
 	}
-
 	// fill the response
 	r.Response.WriteJsonExit(WaterInviteStep1Resp{
 		Session:                    session,
-		EncryptedReceiverPublicKey: "",
+		EncryptedReceiverPublicKey: es,
 		ReturnCode:                 INVITE_RETURN_CODE_SUCCESS,
 	})
 }

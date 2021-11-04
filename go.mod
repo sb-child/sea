@@ -27,6 +27,8 @@ require (
 	github.com/gogf/gf/v2 v2.0.0-alpha
 )
 
+require github.com/clbanning/mxj v1.8.5-0.20200714211355-ff02cfb8ea28 // indirect
+
 require (
 	github.com/ProtonMail/go-crypto v0.0.0-20210920160938-87db9fbc61c7 // indirect
 	github.com/ProtonMail/go-mime v0.0.0-20190923161245-9b5a4261663a // indirect
@@ -34,6 +36,7 @@ require (
 	github.com/clbanning/mxj/v2 v2.5.5 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/go-redis/redis/v8 v8.11.3 // indirect
+	github.com/gogf/gf v1.16.6
 	github.com/konsorten/go-windows-terminal-sequences v1.0.1 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/sirupsen/logrus v1.4.2 // indirect
