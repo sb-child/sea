@@ -27,7 +27,7 @@ type WaterInviteStep1Resp struct {
 }
 
 type WaterInviteStep2Req struct {
-	EncryptedRandomString string `json:"random"` // a 32 character random string
+	EncryptedRandomString string `json:"random"` // a 32 character encrypted random string
 	Session               string `json:"session"`
 }
 
@@ -36,14 +36,14 @@ type WaterInviteStep2Resp struct {
 }
 
 const (
-	INVITE_RETURN_CODE_SUCCESS            = 0
-	INVITE_RETURN_CODE_DECRYPTION_FAILED  = 1
-	INVITE_RETURN_CODE_SESSION_NOT_FOUND  = 2
-	INVITE_RETURN_CODE_SESSION_ERROR      = 3
-	INVITE_RETURN_CODE_BAD_KEY            = 4
-	INVITE_RETURN_CODE_BAD_RANDOM_STRING  = 5
-	INVITE_RETURN_CODE_KEY_ALREADY_EXISTS = 6
-	INVITE_RETURN_CODE_SERVER_ERROR       = 7
+	INVITE_RETURN_CODE_SUCCESS            = 0 // success
+	INVITE_RETURN_CODE_DECRYPTION_FAILED  = 1 // failed to decrypt
+	INVITE_RETURN_CODE_SESSION_NOT_FOUND  = 2 // session not found
+	INVITE_RETURN_CODE_SESSION_ERROR      = 3 // can't create session, needs a retry
+	INVITE_RETURN_CODE_BAD_KEY            = 4 // invalid key, expired, a private key, banned key or empty string
+	INVITE_RETURN_CODE_BAD_RANDOM_STRING  = 5 // random string is not 32 characters long
+	INVITE_RETURN_CODE_KEY_ALREADY_EXISTS = 6 // this key already exists, return it after a successful authentication
+	INVITE_RETURN_CODE_SERVER_ERROR       = 7 // server isn't ready
 )
 
 func WaterInviteApiMiddleware(r *ghttp.Request) {
@@ -55,38 +55,32 @@ func (*waterInviteApi) Step1(r *ghttp.Request) {
 	var req *WaterInviteStep1Req
 	r.Parse(req)
 	throw := func(code int) {
-		r.Response.WriteJson(WaterInviteStep1Resp{
+		r.Response.WriteJsonExit(WaterInviteStep1Resp{
 			ReturnCode: code,
 		})
 	}
 	// verify the public key
 	k, err := crypto.NewKeyFromArmored(req.SenderPublicKey)
-	if (err != nil) || (!k.CanVerify()) || (!k.IsPrivate()) || (!k.IsExpired()) {
+	if (err != nil) || (!k.CanVerify()) || (k.IsPrivate()) || (k.IsExpired()) {
 		throw(INVITE_RETURN_CODE_BAD_KEY)
-		return
 	}
-	ks := serviceWater.WaterKey.GetKeyStatus(req.SenderPublicKey)
-	if (ks != serviceWater.WATER_KEY_STATUS_NOT_FOUND) || (ks == serviceWater.WATER_KEY_STATUS_WAIT_FOR_RESULT) {
+	if ks := serviceWater.WaterKey.GetKeyStatus(req.SenderPublicKey); ks != serviceWater.WATER_KEY_STATUS_NOT_FOUND {
 		throw(INVITE_RETURN_CODE_BAD_KEY)
-		return
 	}
-	// generate a session
+	// create a session
 	session, err := serviceWater.WaterInvite.CreateSession()
 	if err != nil {
 		throw(INVITE_RETURN_CODE_SESSION_ERROR)
-		return
 	}
 	// save the public key and the session to database
 	err = serviceWater.WaterInvite.SetSessionSender(session, req.SenderPublicKey)
 	if err != nil {
 		throw(INVITE_RETURN_CODE_SESSION_NOT_FOUND)
-		return
 	}
 	// encrypt receiver's public key and session
 	selfKeyID, err := serviceWater.WaterKey.GetSelfKeyID()
 	if err != nil {
 		throw(INVITE_RETURN_CODE_SERVER_ERROR)
-		return
 	}
 	selfKey, _ := serviceWater.WaterKey.GetKey(selfKeyID)
 	_ = selfKey // todo
