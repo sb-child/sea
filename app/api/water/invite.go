@@ -23,8 +23,13 @@ type WaterInviteStep1Req struct {
 
 type WaterInviteStep1Resp struct {
 	Session                    string `json:"session"`  // a 64 character random string
-	EncryptedReceiverPublicKey string `json:"receiver"` // a encrypted OpenPGP public key
+	EncryptedReceiverPublicKey string `json:"receiver"` // a encrypted pack, if sender haven't the private key, it can't be decrypted
 	ReturnCode                 int    `json:"returnCode"`
+}
+
+type WaterInviteStep1Pack struct {
+	Session           string `json:"session"`
+	ReceiverPublicKey string `json:"receiver"`
 }
 
 type WaterInviteStep2Req struct {
@@ -85,10 +90,14 @@ func (*waterInviteApi) Step1(r *ghttp.Request) {
 		throw(INVITE_RETURN_CODE_SERVER_ERROR)
 	}
 	selfKey, _ := serviceWater.WaterKey.GetKey(selfKeyID) // this key has already been checked, so it's safe to continue
-	helper.EncryptMessageArmored(selfKey, "")
+	es, err := helper.EncryptMessageArmored(selfKey, "")
+	_ = es // todo
+	if err != nil {
+		throw(INVITE_RETURN_CODE_SERVER_ERROR)
+	}
 
 	// fill the response
-	r.Response.WriteJson(WaterInviteStep1Resp{
+	r.Response.WriteJsonExit(WaterInviteStep1Resp{
 		Session:                    session,
 		EncryptedReceiverPublicKey: "",
 		ReturnCode:                 INVITE_RETURN_CODE_SUCCESS,
