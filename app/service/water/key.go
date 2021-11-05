@@ -3,7 +3,10 @@ package service
 import (
 	"github.com/ProtonMail/gopenpgp/v2/crypto"
 	"github.com/gogf/gf/v2/errors/gerror"
+	"github.com/gogf/gf/v2/util/grand"
 )
+
+// manage all keys and sessions
 
 var WaterKey = waterKeyService{}
 
@@ -48,11 +51,14 @@ func (s *waterKeyService) SetKey(id, key string, self bool) error {
 }
 
 func (s *waterKeyService) SetKeySession(id, sessionId string) error {
+	
 	return nil
 }
 
 func (s *waterKeyService) SetKeySessionRandom(id string) (string, error) {
-	return "", nil
+	sessionId := grand.S(64, true)
+	s.SetKeySession(id, sessionId)
+	return sessionId, nil
 }
 
 func (s *waterKeyService) CheckKey(key string, self bool) int {
