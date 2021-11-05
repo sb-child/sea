@@ -35,12 +35,24 @@ func (s *waterKeyService) GetKey(id string) (string, error) {
 	return "", nil
 }
 
+func (s *waterKeyService) GetKeySession(id string) (string, error) {
+	return "", nil
+}
+
 func (s *waterKeyService) SetKey(id, key string, self bool) error {
 	r := s.CheckKey(key, self)
 	if r != WATER_KEY_CHECK_OK {
-		return gerror.Newf("%d", r)
+		return gerror.Newf("check failed: %d", r)
 	}
 	return nil
+}
+
+func (s *waterKeyService) SetKeySession(id, sessionId string) error {
+	return nil
+}
+
+func (s *waterKeyService) SetKeySessionRandom(id string) (string, error) {
+	return "", nil
 }
 
 func (s *waterKeyService) CheckKey(key string, self bool) int {
