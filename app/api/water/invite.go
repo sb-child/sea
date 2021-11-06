@@ -31,7 +31,6 @@ type WaterInviteStep1Resp struct {
 
 type WaterInviteStep2Req struct {
 	EncryptedRandomString string `json:"random"` // a encrypted pack for receiver
-	Session               string `json:"session"`
 }
 
 type WaterInviteStep2Resp struct {
