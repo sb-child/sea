@@ -27,8 +27,9 @@ const (
 )
 
 type WaterInviteStep1Pack struct {
-	Session           string `json:"session"` // a 64 character random string
-	ReceiverPublicKey string `json:"receiver"`
+	Session                    string `json:"session"` // a 64 character random string
+	SenderPublicKeyFingerprint string `json:"sender"`
+	ReceiverPublicKey          string `json:"receiver"`
 }
 
 type WaterInviteStep2Pack struct {
@@ -36,8 +37,12 @@ type WaterInviteStep2Pack struct {
 	RandomString string `json:"random"` // a 32 character random string
 }
 
-func (*waterInviteService) MakeStep1Pack(session, key string) string {
-	r := gparser.New(WaterInviteStep1Pack{Session: session, ReceiverPublicKey: key})
+func (*waterInviteService) MakeStep1Pack(session, key, hash string) string {
+	r := gparser.New(WaterInviteStep1Pack{
+		Session:                    session,
+		ReceiverPublicKey:          key,
+		SenderPublicKeyFingerprint: hash,
+	})
 	return r.MustToJsonString()
 }
 func (s *waterInviteService) InviteStep1(c context.Context, senderPublicKey string) (EncryptedReceiverPublicKey string, ReturnCode int) {
@@ -54,6 +59,7 @@ func (s *waterInviteService) InviteStep1(c context.Context, senderPublicKey stri
 	return
 }
 func (s *waterInviteService) inviteStep1(ctx context.Context, tx *gdb.TX, senderPublicKey string) (string, int) {
+	// ensure this key is valid
 	k, err := crypto.NewKeyFromArmored(senderPublicKey)
 	ks, _ := k.Armor()
 	if kstat := WaterKey.GetKeyStatus(ctx, ks); (err != nil) ||
@@ -61,21 +67,32 @@ func (s *waterInviteService) inviteStep1(ctx context.Context, tx *gdb.TX, sender
 		(kstat != WATER_KEY_STATUS_NOT_FOUND) {
 		return "", INVITE_RETURN_CODE_BAD_KEY
 	}
+	// add it to database
 	senderPublicKeyID, err := WaterKey.AddKey(ctx, ks)
 	if err != nil {
 		return "", INVITE_RETURN_CODE_KEY_ALREADY_EXISTS
 	}
+	// and set the "wait for result" status
 	WaterKey.SetKeyStatus(ctx, senderPublicKeyID, WATER_KEY_STATUS_WAIT_FOR_RESULT)
+	// bind the key to a new session
 	session, err := WaterKey.SetKeySessionRandom(ctx, senderPublicKeyID)
 	if err != nil {
 		return "", INVITE_RETURN_CODE_SESSION_ERROR
 	}
+	// get self key from database
 	selfKeyID, err := WaterKey.GetSelfKeyID(ctx)
 	if err != nil {
 		return "", INVITE_RETURN_CODE_SERVER_ERROR
 	}
-	selfKey, _ := WaterKey.GetKey(ctx, selfKeyID)
-	es, err := helper.EncryptMessageArmored(selfKey, s.MakeStep1Pack(session, selfKey))
+	selfKey, _ := WaterKey.GetKey(ctx, selfKeyID) // ingore the error because in a transaction
+	// encrypt and response
+	es, err := helper.EncryptMessageArmored(
+		selfKey, s.MakeStep1Pack(
+			session,
+			selfKey,
+			k.GetFingerprint(),
+		),
+	)
 	if err != nil {
 		return "", INVITE_RETURN_CODE_SERVER_ERROR
 	}
