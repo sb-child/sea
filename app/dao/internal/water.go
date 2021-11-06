@@ -21,26 +21,26 @@ type WaterDao struct {
 type WaterColumns struct {
 	WaterId    string //
 	Self       string //
-	PublicKey  string //
-	PrivateKey string //
+	Key        string //
 	VerifyStep string //
 	CreatedAt  string //
 	UpdatedAt  string //
 	Banned     string //
 	Url        string //
+	Session    string //
 }
 
 //  waterColumns holds the columns for table water.
 var waterColumns = WaterColumns{
 	WaterId:    "water_id",
 	Self:       "self",
-	PublicKey:  "public_key",
-	PrivateKey: "private_key",
+	Key:        "key",
 	VerifyStep: "verify_step",
 	CreatedAt:  "created_at",
 	UpdatedAt:  "updated_at",
 	Banned:     "banned",
 	Url:        "url",
+	Session:    "session",
 }
 
 // NewWaterDao creates and returns a new DAO object for table data access.

@@ -5,32 +5,20 @@
 package model
 
 import (
-	"github.com/gogf/gf/v2/os/gtime"
+	"github.com/gogf/gf/os/gtime"
 )
-
-// Sea is the golang structure for table sea.
-type Sea struct {
-	SeaId string `orm:"sea_id" json:"seaId" description:""`
-}
 
 // Water is the golang structure for table water.
 type Water struct {
 	WaterId    string      `orm:"water_id"    json:"waterId"    description:""`
 	Self       bool        `orm:"self"        json:"self"       description:""`
-	PublicKey  string      `orm:"public_key"  json:"publicKey"  description:""`
-	PrivateKey string      `orm:"private_key" json:"privateKey" description:""`
+	Key        string      `orm:"key"         json:"key"        description:""`
 	VerifyStep int         `orm:"verify_step" json:"verifyStep" description:""`
 	CreatedAt  *gtime.Time `orm:"created_at"  json:"createdAt"  description:""`
 	UpdatedAt  *gtime.Time `orm:"updated_at"  json:"updatedAt"  description:""`
 	Banned     bool        `orm:"banned"      json:"banned"     description:""`
 	Url        string      `orm:"url"         json:"url"        description:""`
-}
-
-// WaterInvite is the golang structure for table water_invite.
-type WaterInvite struct {
-	Session         string      `orm:"session"           json:"session"         description:""`
-	SenderPublicKey string      `orm:"sender_public_key" json:"senderPublicKey" description:""`
-	CreatedAt       *gtime.Time `orm:"created_at"        json:"createdAt"       description:""`
+	Session    string      `orm:"session"     json:"session"    description:""`
 }
 
 // WaterPing is the golang structure for table water_ping.
@@ -47,10 +35,4 @@ type WaterRoute struct {
 	Delay    int64  `orm:"delay"    json:"delay"    description:""`
 	Disabled bool   `orm:"disabled" json:"disabled" description:""`
 	Skipped  bool   `orm:"skipped"  json:"skipped"  description:""`
-}
-
-// WaterUrl is the golang structure for table water_url.
-type WaterUrl struct {
-	WaterId string `orm:"water_id" json:"waterId" description:""`
-	Url     string `orm:"url"      json:"url"     description:""`
 }
