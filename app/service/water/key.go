@@ -47,6 +47,10 @@ func (s *waterKeyService) GetKeyIDList(ctx context.Context) []string {
 	return make([]string, 0)
 }
 
+func (s *waterKeyService) AddKey(ctx context.Context, key string) (string, error) {
+	return "", nil
+}
+
 func (s *waterKeyService) GetKey(ctx context.Context, id string) (string, error) {
 	return "", nil
 }
@@ -99,7 +103,7 @@ func (s *waterKeyService) GetKeyStatus(ctx context.Context, id string) int {
 	return WATER_KEY_STATUS_OK
 }
 
-func (s *waterKeyService) SetKeyStatus(ctx context.Context, id string) error {
+func (s *waterKeyService) SetKeyStatus(ctx context.Context, id string, status int) error {
 	return nil
 }
 
