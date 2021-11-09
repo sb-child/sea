@@ -56,6 +56,7 @@ func (api *waterInviteApi) Step1(r *ghttp.Request) {
 func (*waterInviteApi) Step2(r *ghttp.Request) {
 	var req *WaterInviteStep2Req
 	r.Parse(req)
+	k, c := serviceWater.WaterInvite.InviteStep2(r.Context(), req.EncryptedRandomString)
 
 	// w, _ := service.Water.GetSelfWater()
 

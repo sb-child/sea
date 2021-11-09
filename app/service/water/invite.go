@@ -114,5 +114,3 @@ func (s *waterInviteService) InviteStep2(c context.Context, encryptedRandomStrin
 func (s *waterInviteService) inviteStep2(ctx context.Context, tx *gdb.TX, encryptedRandomString string) int {
 	return 0
 }
-
-
