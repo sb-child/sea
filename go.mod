@@ -17,13 +17,13 @@ require (
 	github.com/rivo/uniseg v0.2.0 // indirect
 	go.opentelemetry.io/otel v1.1.0 // indirect
 	go.opentelemetry.io/otel/trace v1.1.0 // indirect
-	golang.org/x/net v0.0.0-20211108170745-6635138e15ea // indirect
-	golang.org/x/sys v0.0.0-20211109065445-02f5c0300f6e // indirect
+	golang.org/x/net v0.0.0-20211111160137-58aab5ef257a // indirect
+	golang.org/x/sys v0.0.0-20211111213525-f221eed1c01e // indirect
 	golang.org/x/text v0.3.7 // indirect
 )
 
 require (
-	github.com/ProtonMail/gopenpgp/v2 v2.2.4
+	github.com/ProtonMail/gopenpgp/v2 v2.2.5
 	github.com/gogf/gf/v2 v2.0.0-alpha
 )
 

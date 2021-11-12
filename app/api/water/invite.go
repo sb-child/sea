@@ -57,10 +57,9 @@ func (*waterInviteApi) Step2(r *ghttp.Request) {
 	var req *WaterInviteStep2Req
 	r.Parse(req)
 	c := serviceWater.WaterInvite.InviteStep2(r.Context(), req.EncryptedRandomString)
-
-	// w, _ := service.Water.GetSelfWater()
-
-	r.Response.WriteJson(WaterInviteStep2Resp{ReturnCode: c})
+	r.Response.WriteJson(WaterInviteStep2Resp{
+		ReturnCode: c,
+	})
 }
 
 func (*waterInviteApi) VerifyID(r *ghttp.Request) {

@@ -84,7 +84,7 @@ func (s *waterInviteService) inviteStep1(ctx context.Context, tx *gdb.TX, sender
 	if err != nil {
 		return "", INVITE_RETURN_CODE_SERVER_ERROR
 	}
-	selfKey, _ := WaterKey.GetKey(ctx, selfKeyID) // ingore the error because in a transaction
+	selfKey, _ := WaterKey.GetPublicKey(ctx, selfKeyID) // ingore the error because in a transaction
 	// encrypt and response
 	es, err := helper.EncryptMessageArmored(
 		selfKey, s.MakeStep1Pack(
@@ -112,5 +112,12 @@ func (s *waterInviteService) InviteStep2(c context.Context, encryptedRandomStrin
 	return
 }
 func (s *waterInviteService) inviteStep2(ctx context.Context, tx *gdb.TX, encryptedRandomString string) int {
+	// get self key from database
+	selfKeyID, err := WaterKey.GetSelfKeyID(ctx)
+	if err != nil {
+		return INVITE_RETURN_CODE_SERVER_ERROR
+	}
+	selfKey, _ := WaterKey.GetPublicKey(ctx, selfKeyID)
+	helper.DecryptMessageArmored(selfKey)
 	return 0
 }
