@@ -6,6 +6,7 @@ import (
 	"sea/app/model"
 
 	"github.com/ProtonMail/gopenpgp/v2/crypto"
+	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/util/grand"
 )
 
@@ -45,16 +46,46 @@ func (s *waterKeyService) GetKeyByID(ctx context.Context, id string) (waterKey, 
 	return waterKey{}, nil
 }
 
+func (s *waterKey) getKey() (*crypto.Key, error) {
+	var m *model.Water
+	err := dao.Water.Ctx(*s.ctx).Where(model.Water{WaterId: s.id}).Scan(&m)
+	if err != nil {
+		return nil, err
+	}
+	k, err := crypto.NewKeyFromArmored(m.Key)
+	return k, err
+}
+
 func (s *waterKey) GetPrivateKey() (string, error) {
-	return "", nil
+	k, err := s.getKey()
+	if err != nil {
+		return "", err
+	}
+	if !k.IsPrivate() {
+		return "", gerror.New("not private key")
+	}
+	ks, _ := k.Armor()
+	return ks, nil
 }
 
 func (s *waterKey) GetPublicKey() (string, error) {
-	return "", nil
+	k, err := s.getKey()
+	if err != nil {
+		return "", err
+	}
+	kp, err := k.ToPublic()
+	if err != nil {
+		return "", err
+	}
+	kps, _ := kp.Armor()
+	return kps, nil
 }
 
-func (s *waterKey) SetKey() (string, error) {
-	return "", nil
+func (s *waterKey) SetKey(k string) error {
+	_, err := dao.Water.Ctx(*s.ctx).
+		Where(model.Water{WaterId: s.id}).
+		Update(model.Water{Key: k})
+	return err
 }
 
 func (s *waterKey) GetKeySession() (string, error) {
