@@ -46,6 +46,19 @@ func (s *waterKeyService) GetKeyByID(ctx context.Context, id string) (waterKey, 
 	return waterKey{}, nil
 }
 
+func (s *waterKeyService) GetKeyByString(ctx context.Context, ks string) (waterKey, error) {
+	ks, c := CheckKeyWithoutType(ks)
+	if c != WATER_KEY_CHECK_OK {
+		return waterKey{}, gerror.New("key check failed")
+	}
+	var m *model.Water
+	err := dao.Water.Ctx(ctx).Where(model.Water{Key: ks}).Scan(&m)
+	if err != nil {
+		return waterKey{}, err
+	}
+	return waterKey{id: m.WaterId, ctx: &ctx}, nil
+}
+
 func (s *waterKey) getKey() (*crypto.Key, error) {
 	var m *model.Water
 	err := dao.Water.Ctx(*s.ctx).Where(model.Water{WaterId: s.id}).Scan(&m)
@@ -115,11 +128,31 @@ func (s *waterKey) SetKeyStatus(status int) error {
 	return nil
 }
 
+func (s *waterKey) IsBanned() bool {
+	return false
+}
+
+func (s *waterKey) SetBanned(b bool) error {
+	return nil
+}
+
 func (s *waterKey) DeleteKey() error {
 	return nil
 }
 
 func CheckKey(key string, self bool) (string, int) {
+	key, err := CheckKeyWithoutType(key)
+	if err != WATER_KEY_CHECK_OK {
+		return "", err
+	}
+	k, _ := crypto.NewKeyFromArmored(key)
+	if k.IsPrivate() != self {
+		return "", WATER_KEY_CHECK_TYPE_ERROR
+	}
+	return key, WATER_KEY_CHECK_OK
+}
+
+func CheckKeyWithoutType(key string) (string, int) {
 	k, err := crypto.NewKeyFromArmored(key)
 	kstring, _ := k.Armor()
 	if err != nil {
@@ -128,11 +161,13 @@ func CheckKey(key string, self bool) (string, int) {
 	if (!k.CanVerify()) || (!k.CanEncrypt()) {
 		return "", WATER_KEY_CHECK_USELESS
 	}
-	if k.IsPrivate() != self {
-		return "", WATER_KEY_CHECK_TYPE_ERROR
-	}
 	if k.IsExpired() {
 		return "", WATER_KEY_CHECK_EXPIRED
 	}
 	return kstring, WATER_KEY_CHECK_OK
+}
+
+func MustCheckKey(key string, self bool) int {
+	_, err := CheckKey(key, self)
+	return err
 }

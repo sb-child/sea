@@ -63,7 +63,7 @@ func (s *waterInviteService) inviteStep1(ctx context.Context, tx *gdb.TX, sender
 	k, err := crypto.NewKeyFromArmored(senderPublicKey)
 	ks, _ := k.Armor()
 	if kstat := WaterKey.GetKeyStatus(ctx, ks); (err != nil) ||
-		(WaterKey.CheckKey(ctx, ks, false) != WATER_KEY_CHECK_OK) ||
+		(MustCheckKey(ks, false) != WATER_KEY_CHECK_OK) ||
 		(kstat != WATER_KEY_STATUS_NOT_FOUND) {
 		return "", INVITE_RETURN_CODE_BAD_KEY
 	}
