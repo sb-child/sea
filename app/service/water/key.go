@@ -120,11 +120,11 @@ func (s *waterKey) SetKeySessionRandom() (string, error) {
 	return sessionId, nil
 }
 
-func (s *waterKey) GetKeyStatus() int {
+func (s *waterKey) GetStatus() int {
 	return WATER_KEY_STATUS_OK
 }
 
-func (s *waterKey) SetKeyStatus(status int) error {
+func (s *waterKey) SetStatus(status int) error {
 	return nil
 }
 

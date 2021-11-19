@@ -61,30 +61,38 @@ func (s *waterInviteService) InviteStep1(c context.Context, senderPublicKey stri
 func (s *waterInviteService) inviteStep1(ctx context.Context, tx *gdb.TX, senderPublicKey string) (string, int) {
 	// ensure this key is valid
 	k, err := crypto.NewKeyFromArmored(senderPublicKey)
+	if err != nil {
+		return "", INVITE_RETURN_CODE_BAD_KEY
+	}
 	ks, _ := k.Armor()
-	if kstat := WaterKey.GetKeyStatus(ctx, ks); (err != nil) ||
-		(MustCheckKey(ks, false) != WATER_KEY_CHECK_OK) ||
-		(kstat != WATER_KEY_STATUS_NOT_FOUND) {
+	if MustCheckKey(ks, false) != WATER_KEY_CHECK_OK {
+		return "", INVITE_RETURN_CODE_BAD_KEY
+	}
+	// the key is valid, now check if it's banned
+	wk, err := WaterKey.GetKeyByString(ctx, ks)
+	// if the key is not found, it's not banned
+	// if the key is found, but the status is not banned, it's not banned
+	if (err == nil) && (wk.IsBanned()) {
 		return "", INVITE_RETURN_CODE_BAD_KEY
 	}
 	// add it to database
-	senderPublicKeyID, err := WaterKey.AddKey(ctx, ks)
+	senderWaterKey, err := WaterKey.AddKey(ctx, ks)
 	if err != nil {
 		return "", INVITE_RETURN_CODE_KEY_ALREADY_EXISTS
 	}
 	// and set the "wait for result" status
-	WaterKey.SetKeyStatus(ctx, senderPublicKeyID, WATER_KEY_STATUS_WAIT_FOR_RESULT)
+	senderWaterKey.SetStatus(WATER_KEY_STATUS_WAIT_FOR_RESULT)
 	// bind the key to a new session
-	session, err := WaterKey.SetKeySessionRandom(ctx, senderPublicKeyID)
+	session, err := senderWaterKey.SetKeySessionRandom()
 	if err != nil {
 		return "", INVITE_RETURN_CODE_SESSION_ERROR
 	}
 	// get self key from database
-	selfKeyID, err := WaterKey.GetSelfKeyID(ctx)
+	selfWaterKey, err := WaterKey.GetSelfKey(ctx)
 	if err != nil {
 		return "", INVITE_RETURN_CODE_SERVER_ERROR
 	}
-	selfKey, _ := WaterKey.GetPublicKey(ctx, selfKeyID) // ingore the error because in a transaction
+	selfKey, _ := selfWaterKey.GetPrivateKey()
 	// encrypt and response
 	es, err := helper.EncryptMessageArmored(
 		selfKey, s.MakeStep1Pack(
@@ -113,11 +121,11 @@ func (s *waterInviteService) InviteStep2(c context.Context, encryptedRandomStrin
 }
 func (s *waterInviteService) inviteStep2(ctx context.Context, tx *gdb.TX, encryptedRandomString string) int {
 	// get self key from database
-	selfKeyID, err := WaterKey.GetSelfKeyID(ctx)
+	selfWaterKey, err := WaterKey.GetSelfKey(ctx)
 	if err != nil {
 		return INVITE_RETURN_CODE_SERVER_ERROR
 	}
-	selfKey, _ := WaterKey.GetPublicKey(ctx, selfKeyID)
-	helper.DecryptMessageArmored(selfKey)
+	selfKeyString, _ := selfWaterKey.GetPrivateKey()
+	helper.DecryptMessageArmored(selfKeyString, nil, encryptedRandomString)
 	return 0
 }
