@@ -21,6 +21,7 @@ func main() {
 	g.Log().Infof(ctx, "commit: %s", buildInfo["git"])
 	g.Log().Info(ctx, "Starting the chat server - Sea ...")
 	// check the key pair exists
+	g.Log().Info(ctx, "Checking the key pair ...")
 	k, err := serviceWater.WaterKey.GetSelfKey(context.Background())
 	if err != nil {
 		g.Log().Warningf(ctx, "Failed to get the key pair: %s, will generate...", err.Error())
@@ -38,7 +39,10 @@ func main() {
 	} else {
 		g.Log().Infof(ctx, "Got the key pair: %s", k.GetKeyID())
 	}
-	g.Log().Info(ctx, "Finally, start the web server...")
+	// start background tasks
+	g.Log().Info(ctx, "Then, starting the background tasks ...")
+	// todo
+	g.Log().Info(ctx, "Finally, start the http server ...")
 	// run web server
 	g.Server().Run()
 }
