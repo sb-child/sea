@@ -46,8 +46,8 @@ func (s *waterKeyService) GetSelfKey(ctx context.Context) (waterKey, error) {
 }
 
 // AddKey add a key to the database
-func (s *waterKeyService) AddKey(ctx context.Context, key string) (waterKey, error) {
-	key, e := CheckKey(key, false)
+func (s *waterKeyService) AddKey(ctx context.Context, key string, self bool) (waterKey, error) {
+	key, e := CheckKey(key, self)
 	if e != WATER_KEY_CHECK_OK {
 		return waterKey{}, gerror.New("key check failed")
 	}
@@ -55,7 +55,7 @@ func (s *waterKeyService) AddKey(ctx context.Context, key string) (waterKey, err
 	m := &model.Water{
 		WaterId: kid,
 		Key:     key,
-		IsSelf:  false,
+		IsSelf:  self,
 	}
 	_, err := dao.Water.Ctx(ctx).Insert(m)
 	if err != nil {
@@ -80,16 +80,11 @@ func (s *waterKeyService) GetKeyByString(ctx context.Context, ks string) (waterK
 	if c != WATER_KEY_CHECK_OK {
 		return waterKey{}, gerror.New("key check failed")
 	}
-	var m *model.Water
 	kid, err := GetKeyID(ks)
 	if err != nil {
 		return waterKey{}, err
 	}
-	err = dao.Water.Ctx(ctx).Where(model.Water{WaterId: kid}).Scan(&m)
-	if err != nil {
-		return waterKey{}, err
-	}
-	return waterKey{id: m.WaterId, ctx: &ctx}, nil
+	return s.GetKeyByID(ctx, kid)
 }
 
 func (s *waterKey) getKey() (*crypto.Key, error) {
@@ -209,8 +204,13 @@ func GetKeyID(key string) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	kp, err := k.ToPublic()
+	if err != nil {
+		return "", err
+	}
 	// regenerate a clean key without header
-	ks, _ := k.ArmorWithCustomHeaders("", "")
+	// to avoid the key id being changed
+	ks, _ := kp.ArmorWithCustomHeaders("", "")
 	// use sha512 to get fingerprint
 	h := sha512.New()
 	h.Write([]byte(ks))
@@ -220,4 +220,17 @@ func GetKeyID(key string) (string, error) {
 func MustCheckKey(key string, self bool) int {
 	_, err := CheckKey(key, self)
 	return err
+}
+
+func GenerateKey() (string, error) {
+	k, err := crypto.GenerateKey(
+		"water:"+grand.S(64, false),
+		"none@none.com",
+		"rsa",
+		4096,
+	)
+	if err != nil {
+		return "", err
+	}
+	return k.Armor()
 }

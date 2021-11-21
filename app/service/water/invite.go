@@ -76,7 +76,7 @@ func (s *waterInviteService) inviteStep1(ctx context.Context, tx *gdb.TX, sender
 		return "", INVITE_RETURN_CODE_BAD_KEY
 	}
 	// add it to database
-	senderWaterKey, err := WaterKey.AddKey(ctx, ks)
+	senderWaterKey, err := WaterKey.AddKey(ctx, ks, false)
 	if err != nil {
 		return "", INVITE_RETURN_CODE_KEY_ALREADY_EXISTS
 	}
