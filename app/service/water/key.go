@@ -2,6 +2,8 @@ package service
 
 import (
 	"context"
+	"crypto/sha512"
+	"encoding/hex"
 	"sea/app/dao"
 	"sea/app/model"
 
@@ -45,17 +47,15 @@ func (s *waterKeyService) GetSelfKey(ctx context.Context) (waterKey, error) {
 
 // AddKey add a key to the database
 func (s *waterKeyService) AddKey(ctx context.Context, key string) (waterKey, error) {
-	key, e := CheckKeyWithoutType(key)
+	key, e := CheckKey(key, false)
 	if e != WATER_KEY_CHECK_OK {
 		return waterKey{}, gerror.New("key check failed")
 	}
-	k, _ := crypto.NewKeyFromArmored(key)
-	if k.IsPrivate() {
-		return waterKey{}, gerror.New("private key is not allowed")
-	}
+	kid, _ := GetKeyID(key)
 	m := &model.Water{
-		Key:  key,
-		IsSelf: false,
+		WaterId: kid,
+		Key:     key,
+		IsSelf:  false,
 	}
 	_, err := dao.Water.Ctx(ctx).Insert(m)
 	if err != nil {
@@ -81,7 +81,11 @@ func (s *waterKeyService) GetKeyByString(ctx context.Context, ks string) (waterK
 		return waterKey{}, gerror.New("key check failed")
 	}
 	var m *model.Water
-	err := dao.Water.Ctx(ctx).Where(model.Water{Key: ks}).Scan(&m)
+	kid, err := GetKeyID(ks)
+	if err != nil {
+		return waterKey{}, err
+	}
+	err = dao.Water.Ctx(ctx).Where(model.Water{WaterId: kid}).Scan(&m)
 	if err != nil {
 		return waterKey{}, err
 	}
@@ -121,6 +125,10 @@ func (s *waterKey) GetPublicKey() (string, error) {
 	}
 	kps, _ := kp.Armor()
 	return kps, nil
+}
+
+func (s *waterKey) GetKeyID() string {
+	return s.id
 }
 
 func (s *waterKey) SetKey(k string) error {
@@ -194,6 +202,19 @@ func CheckKeyWithoutType(key string) (string, int) {
 		return "", WATER_KEY_CHECK_EXPIRED
 	}
 	return kstring, WATER_KEY_CHECK_OK
+}
+
+func GetKeyID(key string) (string, error) {
+	k, err := crypto.NewKeyFromArmored(key)
+	if err != nil {
+		return "", err
+	}
+	// regenerate a clean key without header
+	ks, _ := k.ArmorWithCustomHeaders("", "")
+	// use sha512 to get fingerprint
+	h := sha512.New()
+	h.Write([]byte(ks))
+	return hex.EncodeToString(h.Sum(nil)), nil
 }
 
 func MustCheckKey(key string, self bool) int {
