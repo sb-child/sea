@@ -35,17 +35,46 @@ const (
 
 // GetSelfKeyID returns the self key ID (same as water ID)
 func (s *waterKeyService) GetSelfKey(ctx context.Context) (waterKey, error) {
-	return waterKey{}, nil
+	var m *model.Water
+	err := dao.Water.Ctx(ctx).Where(model.Water{Self: true}).Scan(&m)
+	if err != nil {
+		return waterKey{}, err
+	}
+	return waterKey{id: m.WaterId, ctx: &ctx}, nil
 }
 
+// AddKey add a key to the database
 func (s *waterKeyService) AddKey(ctx context.Context, key string) (waterKey, error) {
-	return waterKey{}, nil
+	key, e := CheckKeyWithoutType(key)
+	if e != WATER_KEY_CHECK_OK {
+		return waterKey{}, gerror.New("key check failed")
+	}
+	k, _ := crypto.NewKeyFromArmored(key)
+	if k.IsPrivate() {
+		return waterKey{}, gerror.New("private key is not allowed")
+	}
+	m := &model.Water{
+		Key:  key,
+		Self: false,
+	}
+	_, err := dao.Water.Ctx(ctx).Insert(m)
+	if err != nil {
+		return waterKey{}, err
+	}
+	return waterKey{id: m.WaterId, ctx: &ctx}, nil
 }
 
+// GetKeyByID returns the key by ID
 func (s *waterKeyService) GetKeyByID(ctx context.Context, id string) (waterKey, error) {
-	return waterKey{}, nil
+	var m *model.Water
+	err := dao.Water.Ctx(ctx).Where(model.Water{WaterId: id}).Scan(&m)
+	if err != nil {
+		return waterKey{}, err
+	}
+	return waterKey{id: m.WaterId, ctx: &ctx}, nil
 }
 
+// GetKeyByString returns the key by string
 func (s *waterKeyService) GetKeyByString(ctx context.Context, ks string) (waterKey, error) {
 	ks, c := CheckKeyWithoutType(ks)
 	if c != WATER_KEY_CHECK_OK {
