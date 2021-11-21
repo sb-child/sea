@@ -2,6 +2,7 @@ package api
 
 import (
 	// "context"
+	"sea/app/api"
 	"sea/app/service"
 	serviceWater "sea/app/service/water"
 
@@ -39,7 +40,7 @@ type WaterInviteStep2Resp struct {
 
 func WaterInviteApiMiddleware(r *ghttp.Request) {
 	r.Middleware.Next()
-
+	api.CookieMiddleware(r)
 }
 
 // invite steps
