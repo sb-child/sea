@@ -19,28 +19,30 @@ type WaterDao struct {
 
 // WaterColumns defines and stores column names for table water.
 type WaterColumns struct {
-	WaterId    string //
-	Self       string //
-	Key        string //
-	VerifyStep string //
-	CreatedAt  string //
-	UpdatedAt  string //
-	Banned     string //
-	Url        string //
-	Session    string //
+	WaterId       string //
+	VerifySession string //
+	Key           string //
+	Url           string //
+	IsBanned      string //
+	IsVerified    string //
+	IsReviewed    string //
+	CreatedAt     string //
+	UpdatedAt     string //
+	IsSelf        string //
 }
 
 //  waterColumns holds the columns for table water.
 var waterColumns = WaterColumns{
-	WaterId:    "water_id",
-	Self:       "self",
-	Key:        "key",
-	VerifyStep: "verify_step",
-	CreatedAt:  "created_at",
-	UpdatedAt:  "updated_at",
-	Banned:     "banned",
-	Url:        "url",
-	Session:    "session",
+	WaterId:       "water_id",
+	VerifySession: "verify_session",
+	Key:           "key",
+	Url:           "url",
+	IsBanned:      "is_banned",
+	IsVerified:    "is_verified",
+	IsReviewed:    "is_reviewed",
+	CreatedAt:     "created_at",
+	UpdatedAt:     "updated_at",
+	IsSelf:        "is_self",
 }
 
 // NewWaterDao creates and returns a new DAO object for table data access.

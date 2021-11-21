@@ -10,15 +10,16 @@ import (
 
 // Water is the golang structure for table water.
 type Water struct {
-	WaterId    string      `orm:"water_id"    json:"waterId"    description:""`
-	Self       bool        `orm:"self"        json:"self"       description:""`
-	Key        string      `orm:"key"         json:"key"        description:""`
-	VerifyStep int         `orm:"verify_step" json:"verifyStep" description:""`
-	CreatedAt  *gtime.Time `orm:"created_at"  json:"createdAt"  description:""`
-	UpdatedAt  *gtime.Time `orm:"updated_at"  json:"updatedAt"  description:""`
-	Banned     bool        `orm:"banned"      json:"banned"     description:""`
-	Url        string      `orm:"url"         json:"url"        description:""`
-	Session    string      `orm:"session"     json:"session"    description:""`
+	WaterId       string      `orm:"water_id"       json:"waterId"       description:""`
+	VerifySession string      `orm:"verify_session" json:"verifySession" description:""`
+	Key           string      `orm:"key"            json:"key"           description:""`
+	Url           string      `orm:"url"            json:"url"           description:""`
+	IsBanned      bool        `orm:"is_banned"      json:"isBanned"      description:""`
+	IsVerified    bool        `orm:"is_verified"    json:"isVerified"    description:""`
+	IsReviewed    bool        `orm:"is_reviewed"    json:"isReviewed"    description:""`
+	CreatedAt     *gtime.Time `orm:"created_at"     json:"createdAt"     description:""`
+	UpdatedAt     *gtime.Time `orm:"updated_at"     json:"updatedAt"     description:""`
+	IsSelf        bool        `orm:"is_self"        json:"isSelf"        description:""`
 }
 
 // WaterPing is the golang structure for table water_ping.

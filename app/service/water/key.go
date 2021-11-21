@@ -36,7 +36,7 @@ const (
 // GetSelfKeyID returns the self key ID (same as water ID)
 func (s *waterKeyService) GetSelfKey(ctx context.Context) (waterKey, error) {
 	var m *model.Water
-	err := dao.Water.Ctx(ctx).Where(model.Water{Self: true}).Scan(&m)
+	err := dao.Water.Ctx(ctx).Where(model.Water{IsSelf: true}).Scan(&m)
 	if err != nil {
 		return waterKey{}, err
 	}
@@ -55,7 +55,7 @@ func (s *waterKeyService) AddKey(ctx context.Context, key string) (waterKey, err
 	}
 	m := &model.Water{
 		Key:  key,
-		Self: false,
+		IsSelf: false,
 	}
 	_, err := dao.Water.Ctx(ctx).Insert(m)
 	if err != nil {
@@ -138,7 +138,7 @@ func (s *waterKey) SetKeySession(sessionId string) error {
 	_, err := dao.Water.Ctx(*s.ctx).Where(model.Water{
 		WaterId: s.id,
 	}).Update(model.Water{
-		Session: sessionId,
+		VerifySession: sessionId,
 	})
 	return err
 }
