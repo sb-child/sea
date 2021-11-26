@@ -1,16 +1,22 @@
 package router
 
 import (
+	"context"
 	"sea/app/api"
 	waterApi "sea/app/api/water"
 
+	"github.com/gogf/gf/v2/container/gvar"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/ghttp"
 )
 
 func init() {
 	s := g.Server()
-	root := s.Group("_sea-ety729053r/")
+	rootURL, err := g.Config().Get(context.Background(), "water.root")
+	if err != nil {
+		rootURL = gvar.New("/")
+	}
+	root := s.Group(rootURL.String())
 	// user
 	v1User := func(group *ghttp.RouterGroup) {
 		group.Middleware(

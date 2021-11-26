@@ -10,15 +10,15 @@ require (
 	github.com/gorilla/websocket v1.4.2 // indirect
 	github.com/grokify/html-strip-tags-go v0.0.1 // indirect
 	github.com/lib/pq v1.10.4
-	github.com/mattn/go-colorable v0.1.11 // indirect
+	github.com/mattn/go-colorable v0.1.12 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect
 	github.com/mattn/go-runewidth v0.0.13 // indirect
 	github.com/olekukonko/tablewriter v0.0.5 // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
 	go.opentelemetry.io/otel v1.2.0 // indirect
 	go.opentelemetry.io/otel/trace v1.2.0 // indirect
-	golang.org/x/net v0.0.0-20211118161319-6a13c67c3ce4 // indirect
-	golang.org/x/sys v0.0.0-20211117180635-dee7805ff2e1 // indirect
+	golang.org/x/net v0.0.0-20211123203042-d83791d6bcd9 // indirect
+	golang.org/x/sys v0.0.0-20211124211545-fe61309f8881 // indirect
 	golang.org/x/text v0.3.7 // indirect
 )
 
