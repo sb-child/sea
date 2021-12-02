@@ -30,14 +30,17 @@ func init() {
 			waterApi.WaterInviteApiMiddleware,
 			api.CookieMiddleware,
 		)
-		group.POST("1", waterApi.WaterInvite.VerifyID)
-		group.POST("2", waterApi.WaterInvite.VerifyID)
+		// /v1/water/auth/join/1
+		group.POST("1", waterApi.WaterInvite.Step1)
+		// /v1/water/auth/join/2
+		group.POST("2", waterApi.WaterInvite.Step2)
 	}
 	v1WaterAuth := func(group *ghttp.RouterGroup) {
 		group.Middleware(
 			api.CookieMiddleware,
 		)
 		group.Group("join", v1WaterJoin)
+		// /v1/water/auth/login
 		group.POST("login", api.Water.VerifyID)
 	}
 	v1WaterSync := func(group *ghttp.RouterGroup) {
