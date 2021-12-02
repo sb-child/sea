@@ -18,11 +18,18 @@ func init() {
 	}
 	root := s.Group(rootURL.String())
 	// user
+	v1UserAuth := func(group *ghttp.RouterGroup) {
+		group.Middleware(
+			api.CookieMiddleware,
+		)
+		// /v1/user/auth/login
+		group.POST("login", api.Hello.Index)
+	}
 	v1User := func(group *ghttp.RouterGroup) {
 		group.Middleware(
 			api.CookieMiddleware,
 		)
-		group.ALL("login", api.Hello)
+		group.Group("auth", v1UserAuth)
 	}
 	// water
 	v1WaterJoin := func(group *ghttp.RouterGroup) {
