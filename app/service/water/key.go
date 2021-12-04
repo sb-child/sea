@@ -134,7 +134,12 @@ func (s *waterKey) SetKey(k string) error {
 }
 
 func (s *waterKey) GetKeySession() (string, error) {
-	return "", nil
+	var m *model.Water
+	err := dao.Water.Ctx(*s.ctx).Where(model.Water{WaterId: s.id}).Scan(&m)
+	if err != nil {
+		return "", err
+	}
+	return m.VerifySession, nil
 }
 
 func (s *waterKey) SetKeySession(sessionId string) error {
@@ -153,23 +158,65 @@ func (s *waterKey) SetKeySessionRandom() (string, error) {
 }
 
 func (s *waterKey) GetStatus() int {
+	var m *model.Water
+	err := dao.Water.Ctx(*s.ctx).Where(model.Water{WaterId: s.id}).Scan(&m)
+	if err != nil {
+		return WATER_KEY_STATUS_NOT_FOUND
+	}
+	if m.IsBanned {
+		return WATER_KEY_STATUS_BANNED
+	}
+	if !m.IsReviewed {
+		return WATER_KEY_STATUS_WAIT_FOR_RESULT
+	}
 	return WATER_KEY_STATUS_OK
 }
 
-func (s *waterKey) SetStatus(status int) error {
-	return nil
-}
-
 func (s *waterKey) IsBanned() bool {
-	return false
+	var m *model.Water
+	err := dao.Water.Ctx(*s.ctx).Where(model.Water{WaterId: s.id}).Scan(&m)
+	if err != nil {
+		return false
+	}
+	return m.IsBanned
 }
 
 func (s *waterKey) SetBanned(b bool) error {
-	return nil
+	_, err := dao.Water.Ctx(*s.ctx).Where(model.Water{WaterId: s.id}).Update(model.Water{IsBanned: b})
+	return err
+}
+
+func (s *waterKey) IsReviewed() bool {
+	var m *model.Water
+	err := dao.Water.Ctx(*s.ctx).Where(model.Water{WaterId: s.id}).Scan(&m)
+	if err != nil {
+		return false
+	}
+	return m.IsReviewed
+}
+
+func (s *waterKey) SetReviewed(b bool) error {
+	_, err := dao.Water.Ctx(*s.ctx).Where(model.Water{WaterId: s.id}).Update(model.Water{IsReviewed: b})
+	return err
+}
+
+func (s *waterKey) IsVerified() bool {
+	var m *model.Water
+	err := dao.Water.Ctx(*s.ctx).Where(model.Water{WaterId: s.id}).Scan(&m)
+	if err != nil {
+		return false
+	}
+	return m.IsVerified
+}
+
+func (s *waterKey) SetVerified(b bool) error {
+	_, err := dao.Water.Ctx(*s.ctx).Where(model.Water{WaterId: s.id}).Update(model.Water{IsVerified: b})
+	return err
 }
 
 func (s *waterKey) DeleteKey() error {
-	return nil
+	_, err := dao.Water.Ctx(*s.ctx).Where(model.Water{WaterId: s.id}).Delete()
+	return err
 }
 
 func CheckKey(key string, self bool) (string, int) {

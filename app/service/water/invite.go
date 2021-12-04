@@ -80,8 +80,6 @@ func (s *waterInviteService) inviteStep1(ctx context.Context, tx *gdb.TX, sender
 	if err != nil {
 		return "", INVITE_RETURN_CODE_KEY_ALREADY_EXISTS
 	}
-	// and set the "wait for result" status
-	senderWaterKey.SetStatus(WATER_KEY_STATUS_WAIT_FOR_RESULT)
 	// bind the key to a new session
 	session, err := senderWaterKey.SetKeySessionRandom()
 	if err != nil {
