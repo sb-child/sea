@@ -40,7 +40,7 @@ type WaterInviteStep2Resp struct {
 
 func WaterInviteApiMiddleware(r *ghttp.Request) {
 	r.Middleware.Next()
-	api.CookieMiddleware(r)
+	api.HeaderMiddleware(r)
 }
 
 // invite steps

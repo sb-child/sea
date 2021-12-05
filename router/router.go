@@ -18,23 +18,16 @@ func init() {
 	}
 	// user
 	v1UserAuth := func(group *ghttp.RouterGroup) {
-		group.Middleware(
-			api.CookieMiddleware,
-		)
 		// /v1/user/auth/login
 		group.POST("login", api.Hello.Index)
 	}
 	v1User := func(group *ghttp.RouterGroup) {
-		group.Middleware(
-			api.CookieMiddleware,
-		)
 		group.Group("/auth", v1UserAuth)
 	}
 	// water
 	v1WaterJoin := func(group *ghttp.RouterGroup) {
 		group.Middleware(
 			waterApi.WaterInviteApiMiddleware,
-			api.CookieMiddleware,
 		)
 		// /v1/water/auth/join/1
 		group.POST("1", waterApi.WaterInvite.Step1)
@@ -42,29 +35,23 @@ func init() {
 		group.POST("2", waterApi.WaterInvite.Step2)
 	}
 	v1WaterAuth := func(group *ghttp.RouterGroup) {
-		group.Middleware(
-			api.CookieMiddleware,
-		)
 		group.Group("/join", v1WaterJoin)
 		// /v1/water/auth/login
 		group.POST("login", api.Water.VerifyID)
 	}
 	v1WaterSync := func(group *ghttp.RouterGroup) {
-		group.Middleware(
-			api.CookieMiddleware,
-		)
 		group.POST("event", api.Water.VerifyID)
 		group.POST("verify", api.Water.VerifyID)
 	}
 	v1Water := func(group *ghttp.RouterGroup) {
-		group.Middleware(
-			api.CookieMiddleware,
-		)
 		group.Group("/auth", v1WaterAuth)
 		group.Group("/sync", v1WaterSync)
 	}
 	// main router
 	root := s.Group(rootURL.String())
+	root.Middleware(
+		api.HeaderMiddleware,
+	)
 	root.GET("/version", api.GetVersion)
 	root.Group("/v1", func(group *ghttp.RouterGroup) {
 		group.Group("/water", v1Water)
