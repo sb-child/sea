@@ -23,7 +23,7 @@ type VerifyIDResp struct {
 }
 
 func (*waterApi) VerifyID(r *ghttp.Request) {
-	var req *VerifyIDReq
+	req := new(VerifyIDReq)
 	r.Parse(req)
 
 	w, _ := service.Water.GetSelfWater()

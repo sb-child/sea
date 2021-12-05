@@ -64,7 +64,7 @@ func (s *waterInviteService) inviteStep1(ctx context.Context, tx *gdb.TX, sender
 	if err != nil {
 		return "", INVITE_RETURN_CODE_BAD_KEY
 	}
-	ks, _ := k.Armor()
+	ks, _ := k.ArmorWithCustomHeaders("", "")
 	if MustCheckKey(ks, false) != WATER_KEY_CHECK_OK {
 		return "", INVITE_RETURN_CODE_BAD_KEY
 	}
@@ -72,7 +72,7 @@ func (s *waterInviteService) inviteStep1(ctx context.Context, tx *gdb.TX, sender
 	wk, err := WaterKey.GetKeyByString(ctx, ks)
 	// if the key is not found, it's not banned
 	// if the key is found, but the status is not banned, it's not banned
-	if (err == nil) && (wk.IsBanned()) {
+	if (err == nil) || (wk.IsBanned()) {
 		return "", INVITE_RETURN_CODE_BAD_KEY
 	}
 	// add it to database

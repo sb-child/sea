@@ -105,7 +105,7 @@ func (s *waterKey) GetPrivateKey() (string, error) {
 	if !k.IsPrivate() {
 		return "", gerror.New("not private key")
 	}
-	ks, _ := k.Armor()
+	ks, _ := k.ArmorWithCustomHeaders("", "")
 	return ks, nil
 }
 
@@ -118,7 +118,7 @@ func (s *waterKey) GetPublicKey() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	kps, _ := kp.Armor()
+	kps, _ := kp.ArmorWithCustomHeaders("", "")
 	return kps, nil
 }
 

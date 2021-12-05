@@ -39,6 +39,11 @@ func main() {
 	} else {
 		g.Log().Infof(ctx, "Got the key pair: %s", k.GetKeyID())
 	}
+	if p, err := k.GetPublicKey(); err == nil {
+		g.Log().Infof(ctx, "Public key: \n%s", p)
+	} else {
+		g.Log().Fatal(ctx, err)
+	}
 	// start background tasks
 	g.Log().Info(ctx, "Starting background tasks ...")
 	// todo
