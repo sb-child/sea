@@ -19,12 +19,12 @@ require (
 	go.opentelemetry.io/otel/trace v1.2.0 // indirect
 	golang.org/x/net v0.0.0-20211203184738-4852103109b8 // indirect
 	golang.org/x/sys v0.0.0-20211204120058-94396e421777 // indirect
-	golang.org/x/text v0.3.7 // indirect
+	golang.org/x/text v0.3.8-0.20211105212822-18b340fc7af2 // indirect
 )
 
 require (
 	github.com/ProtonMail/gopenpgp/v2 v2.3.0
-	github.com/gogf/gf/v2 v2.0.0-beta
+	github.com/gogf/gf/v2 v2.0.0-beta.0.20211204155156-2bb80593a7b5
 )
 
 require github.com/clbanning/mxj v1.8.5-0.20200714211355-ff02cfb8ea28 // indirect

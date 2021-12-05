@@ -5,35 +5,35 @@
 package model
 
 import (
-	"github.com/gogf/gf/os/gtime"
+	"github.com/gogf/gf/v2/os/gtime"
 )
 
 // Water is the golang structure for table water.
 type Water struct {
-	WaterId       string      `orm:"water_id"       json:"waterId"       description:""`
-	VerifySession string      `orm:"verify_session" json:"verifySession" description:""`
-	Key           string      `orm:"key"            json:"key"           description:""`
-	Url           string      `orm:"url"            json:"url"           description:""`
-	IsBanned      bool        `orm:"is_banned"      json:"isBanned"      description:""`
-	IsVerified    bool        `orm:"is_verified"    json:"isVerified"    description:""`
-	IsReviewed    bool        `orm:"is_reviewed"    json:"isReviewed"    description:""`
-	CreatedAt     *gtime.Time `orm:"created_at"     json:"createdAt"     description:""`
-	UpdatedAt     *gtime.Time `orm:"updated_at"     json:"updatedAt"     description:""`
-	IsSelf        bool        `orm:"is_self"        json:"isSelf"        description:""`
+	WaterId       string      `json:"waterId"       description:""`
+	VerifySession string      `json:"verifySession" description:""`
+	Key           string      `json:"key"           description:""`
+	Url           string      `json:"url"           description:""`
+	IsBanned      bool        `json:"isBanned"      description:""`
+	IsVerified    bool        `json:"isVerified"    description:""`
+	IsReviewed    bool        `json:"isReviewed"    description:""`
+	CreatedAt     *gtime.Time `json:"createdAt"     description:""`
+	UpdatedAt     *gtime.Time `json:"updatedAt"     description:""`
+	IsSelf        bool        `json:"isSelf"        description:""`
 }
 
 // WaterPing is the golang structure for table water_ping.
 type WaterPing struct {
-	WaterFrom string `orm:"water_from" json:"waterFrom" description:""`
-	WaterTo   string `orm:"water_to"   json:"waterTo"   description:""`
-	Delay     int64  `orm:"delay"      json:"delay"     description:""`
+	WaterFrom string `json:"waterFrom" description:""`
+	WaterTo   string `json:"waterTo"   description:""`
+	Delay     int64  `json:"delay"     description:""`
 }
 
 // WaterRoute is the golang structure for table water_route.
 type WaterRoute struct {
-	WaterTo  string `orm:"water_to" json:"waterTo"  description:""`
-	Route    string `orm:"route"    json:"route"    description:""`
-	Delay    int64  `orm:"delay"    json:"delay"    description:""`
-	Disabled bool   `orm:"disabled" json:"disabled" description:""`
-	Skipped  bool   `orm:"skipped"  json:"skipped"  description:""`
+	WaterTo  string `json:"waterTo"  description:""`
+	Route    string `json:"route"    description:""`
+	Delay    int64  `json:"delay"    description:""`
+	Disabled bool   `json:"disabled" description:""`
+	Skipped  bool   `json:"skipped"  description:""`
 }

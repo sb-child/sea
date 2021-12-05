@@ -10,11 +10,11 @@ import (
 	"github.com/gogf/gf/v2/frame/g"
 )
 
-// WaterRouteDao is the manager for logic model data accessing and custom defined data operations functions management.
+// WaterRouteDao is the data access object for table water_route.
 type WaterRouteDao struct {
 	Table   string            // Table is the underlying table name of the DAO.
 	Group   string            // Group is the database configuration group name of current DAO.
-	Columns WaterRouteColumns // Columns is the short type for Columns, which contains all the column names of Table for convenient usage.
+	Columns WaterRouteColumns // Columns contains all the column names of Table for convenient usage.
 }
 
 // WaterRouteColumns defines and stores column names for table water_route.

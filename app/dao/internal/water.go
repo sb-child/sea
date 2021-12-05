@@ -10,11 +10,11 @@ import (
 	"github.com/gogf/gf/v2/frame/g"
 )
 
-// WaterDao is the manager for logic model data accessing and custom defined data operations functions management.
+// WaterDao is the data access object for table water.
 type WaterDao struct {
 	Table   string       // Table is the underlying table name of the DAO.
 	Group   string       // Group is the database configuration group name of current DAO.
-	Columns WaterColumns // Columns is the short type for Columns, which contains all the column names of Table for convenient usage.
+	Columns WaterColumns // Columns contains all the column names of Table for convenient usage.
 }
 
 // WaterColumns defines and stores column names for table water.

@@ -65,7 +65,7 @@ func init() {
 		group.Group("sync/", v1WaterSync)
 	}
 	// main router
-	root.GET("version", api.GetVersion)
+	root.GET("/version", api.GetVersion)
 	root.Group("v1/", func(group *ghttp.RouterGroup) {
 		group.Group("water/", v1Water)
 		group.Group("user/", v1User)
