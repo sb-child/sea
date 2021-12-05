@@ -16,7 +16,6 @@ func init() {
 	if err != nil {
 		rootURL = gvar.New("/")
 	}
-	root := s.Group(rootURL.String())
 	// user
 	v1UserAuth := func(group *ghttp.RouterGroup) {
 		group.Middleware(
@@ -29,7 +28,7 @@ func init() {
 		group.Middleware(
 			api.CookieMiddleware,
 		)
-		group.Group("auth", v1UserAuth)
+		group.Group("/auth", v1UserAuth)
 	}
 	// water
 	v1WaterJoin := func(group *ghttp.RouterGroup) {
@@ -46,7 +45,7 @@ func init() {
 		group.Middleware(
 			api.CookieMiddleware,
 		)
-		group.Group("join", v1WaterJoin)
+		group.Group("/join", v1WaterJoin)
 		// /v1/water/auth/login
 		group.POST("login", api.Water.VerifyID)
 	}
@@ -61,13 +60,14 @@ func init() {
 		group.Middleware(
 			api.CookieMiddleware,
 		)
-		group.Group("auth/", v1WaterAuth)
-		group.Group("sync/", v1WaterSync)
+		group.Group("/auth", v1WaterAuth)
+		group.Group("/sync", v1WaterSync)
 	}
 	// main router
+	root := s.Group(rootURL.String())
 	root.GET("/version", api.GetVersion)
-	root.Group("v1/", func(group *ghttp.RouterGroup) {
-		group.Group("water/", v1Water)
-		group.Group("user/", v1User)
+	root.Group("/v1", func(group *ghttp.RouterGroup) {
+		group.Group("/water", v1Water)
+		group.Group("/user", v1User)
 	})
 }

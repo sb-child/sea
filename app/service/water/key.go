@@ -231,7 +231,7 @@ func CheckKey(key string, self bool) (string, int) {
 
 func CheckKeyWithoutType(key string) (string, int) {
 	k, err := crypto.NewKeyFromArmored(key)
-	kstring, _ := k.Armor()
+	kstring, _ := k.ArmorWithCustomHeaders("", "")
 	if err != nil {
 		return "", WATER_KEY_CHECK_TEST_FAILED
 	}
@@ -277,5 +277,5 @@ func GenerateKey() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return k.Armor()
+	return k.ArmorWithCustomHeaders("", "")
 }

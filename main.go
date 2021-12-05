@@ -40,9 +40,9 @@ func main() {
 		g.Log().Infof(ctx, "Got the key pair: %s", k.GetKeyID())
 	}
 	// start background tasks
-	g.Log().Info(ctx, "Then, starting the background tasks ...")
+	g.Log().Info(ctx, "Then, start background tasks ...")
 	// todo
-	g.Log().Info(ctx, "Finally, start the http server ...")
+	g.Log().Info(ctx, "Finally, start http server ...")
 	// run web server
 	g.Server().Run()
 }
