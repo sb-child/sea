@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"fmt"
 	"sea/app/dao"
 
 	"github.com/ProtonMail/gopenpgp/v2/crypto"
@@ -62,18 +63,19 @@ func (s *waterInviteService) inviteStep1(ctx context.Context, tx *gdb.TX, sender
 	// ensure this key is valid
 	k, err := crypto.NewKeyFromArmored(senderPublicKey)
 	if err != nil {
-		return "", INVITE_RETURN_CODE_BAD_KEY
+		return "1", INVITE_RETURN_CODE_BAD_KEY
 	}
 	ks, _ := k.ArmorWithCustomHeaders("", "")
 	if MustCheckKey(ks, false) != WATER_KEY_CHECK_OK {
-		return "", INVITE_RETURN_CODE_BAD_KEY
+		fmt.Println(MustCheckKey(ks, false))
+		return "2", INVITE_RETURN_CODE_BAD_KEY
 	}
 	// the key is valid, now check if it's banned
 	wk, err := WaterKey.GetKeyByString(ctx, ks)
 	// if the key is not found, it's not banned
 	// if the key is found, but the status is not banned, it's not banned
 	if (err == nil) || (wk.IsBanned()) {
-		return "", INVITE_RETURN_CODE_BAD_KEY
+		return "3", INVITE_RETURN_CODE_BAD_KEY
 	}
 	// add it to database
 	senderWaterKey, err := WaterKey.AddKey(ctx, ks, false)
@@ -90,12 +92,12 @@ func (s *waterInviteService) inviteStep1(ctx context.Context, tx *gdb.TX, sender
 	if err != nil {
 		return "", INVITE_RETURN_CODE_SERVER_ERROR
 	}
-	selfKey, _ := selfWaterKey.GetPrivateKey()
+	publicSelfKey, _ := selfWaterKey.GetPublicKey()
 	// encrypt and response
 	es, err := helper.EncryptMessageArmored(
-		selfKey, s.MakeStep1Pack(
+		publicSelfKey, s.MakeStep1Pack(
 			session,
-			selfKey,
+			publicSelfKey,
 			k.GetFingerprint(),
 		),
 	)
