@@ -2,6 +2,8 @@ package service
 
 import (
 	"context"
+	"crypto/rand"
+	"crypto/rsa"
 	"crypto/sha512"
 	"encoding/hex"
 	"sea/app/dao"
@@ -46,7 +48,7 @@ func (s *waterKeyService) GetSelfKey(ctx context.Context) (waterKey, error) {
 }
 
 // AddKey add a key to the database
-func (s *waterKeyService) AddKey(ctx context.Context, key string, self bool) (waterKey, error) {
+func (s *waterKeyService) AddKey(ctx context.Context, key *rsa.PrivateKey, self bool) (waterKey, error) {
 	key, e := CheckKey(key, self)
 	if e != WATER_KEY_CHECK_OK {
 		return waterKey{}, gerror.New("key check failed")
@@ -217,7 +219,7 @@ func (s *waterKey) DeleteKey() error {
 	return err
 }
 
-func CheckKey(key string, self bool) (string, int) {
+func CheckKey(key *rsa.PrivateKey, self bool) (string, int) {
 	key, err := CheckKeyWithoutType(key)
 	if err != WATER_KEY_CHECK_OK {
 		return "", err
@@ -267,15 +269,8 @@ func MustCheckKey(key string, self bool) int {
 	return err
 }
 
-func GenerateKey() (string, error) {
-	k, err := crypto.GenerateKey(
-		"water:"+grand.S(64, false),
-		"none@none.com",
-		"rsa",
-		4096,
-	)
-	if err != nil {
-		return "", err
-	}
-	return k.ArmorWithCustomHeaders("", "")
+func GenerateKey() (*rsa.PrivateKey, error) {
+	// generate a new rsa 4096 bits key
+	k, err := rsa.GenerateKey(rand.Reader, 4096)
+	return k, err
 }
