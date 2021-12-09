@@ -5,13 +5,13 @@ import (
 	"crypto/rand"
 	"crypto/rsa"
 	"crypto/sha512"
+	"crypto/x509"
 	"encoding/hex"
 	"sea/app/dao"
 	"sea/app/model"
 
-	"github.com/ProtonMail/gopenpgp/v2/crypto"
+	"github.com/gogf/gf/util/grand"
 	"github.com/gogf/gf/v2/errors/gerror"
-	"github.com/gogf/gf/v2/util/grand"
 )
 
 // manage all keys and sessions
@@ -219,6 +219,29 @@ func (s *waterKey) DeleteKey() error {
 	return err
 }
 
+func PackPublicKey(key *rsa.PublicKey) (string, error) {
+	// use x509 pkcs1 to pack public key
+	k := x509.MarshalPKCS1PublicKey(key)
+	return string(k), nil
+}
+
+func UnpackPublicKey(key string) (*rsa.PublicKey, error) {
+	// use x509 pkcs1 to unpack public key
+	k, err := x509.ParsePKCS1PublicKey([]byte(key))
+	return k, err
+}
+
+func PackPrivateKey(key *rsa.PrivateKey) (string, error) {
+	// use x509 pkcs1 to pack private key
+	k := x509.MarshalPKCS1PrivateKey(key)
+	return string(k), nil
+}
+
+func UnpackPrivateKey(key string) (*rsa.PrivateKey, error) {
+	// use x509 pkcs1 to unpack private key
+	k, err := x509.ParsePKCS1PrivateKey([]byte(key))
+	return k, err
+}
 func CheckKey(key *rsa.PrivateKey, self bool) (string, int) {
 	key, err := CheckKeyWithoutType(key)
 	if err != WATER_KEY_CHECK_OK {
