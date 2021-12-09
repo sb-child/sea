@@ -4,12 +4,12 @@ import (
 	"context"
 	"crypto/rand"
 	"crypto/rsa"
-	"crypto/sha512"
 	"crypto/x509"
-	"encoding/hex"
 	"sea/app/dao"
 	"sea/app/model"
 
+	"github.com/ProtonMail/gopenpgp/v2/crypto"
+	"github.com/gogf/gf/frame/g"
 	"github.com/gogf/gf/util/grand"
 	"github.com/gogf/gf/v2/errors/gerror"
 )
@@ -32,7 +32,7 @@ const (
 	WATER_KEY_STATUS_NOT_FOUND       = 3
 	WATER_KEY_CHECK_OK               = 0
 	WATER_KEY_CHECK_TEST_FAILED      = 1
-	WATER_KEY_CHECK_USELESS          = 2
+	WATER_KEY_CHECK_WRONG_SIZE       = 2
 	WATER_KEY_CHECK_TYPE_ERROR       = 3
 	WATER_KEY_CHECK_EXPIRED          = 4
 )
@@ -50,6 +50,27 @@ func (s *waterKeyService) GetSelfKey(ctx context.Context) (waterKey, error) {
 // AddKey add a key to the database
 func (s *waterKeyService) AddKey(ctx context.Context, key *rsa.PrivateKey, self bool) (waterKey, error) {
 	key, e := CheckKey(key, self)
+	if e != WATER_KEY_CHECK_OK {
+		return waterKey{}, gerror.New("key check failed")
+	}
+	kid, _ := GetKeyID(key)
+	m := &model.Water{
+		WaterId: kid,
+		Key:     key,
+		IsSelf:  self,
+	}
+	_, err := dao.Water.Ctx(ctx).Insert(m)
+	if err != nil {
+		return waterKey{}, err
+	}
+	return waterKey{id: m.WaterId, ctx: &ctx}, nil
+}
+
+func (s *waterKeyService) AddSelfKey(ctx context.Context, key *rsa.PrivateKey) (waterKey, error) {
+	if _, err := s.GetSelfKey(ctx); err == nil {
+		return waterKey{}, gerror.New("key already exists")
+	}
+	e := CheckPrivateKey(key)
 	if e != WATER_KEY_CHECK_OK {
 		return waterKey{}, gerror.New("key check failed")
 	}
@@ -219,6 +240,14 @@ func (s *waterKey) DeleteKey() error {
 	return err
 }
 
+// --- utils ---
+
+func GenerateKey() (*rsa.PrivateKey, error) {
+	// generate a new rsa 4096 bits key
+	k, err := rsa.GenerateKey(rand.Reader, 4096)
+	return k, err
+}
+
 func PackPublicKey(key *rsa.PublicKey) (string, error) {
 	// use x509 pkcs1 to pack public key
 	k := x509.MarshalPKCS1PublicKey(key)
@@ -242,58 +271,33 @@ func UnpackPrivateKey(key string) (*rsa.PrivateKey, error) {
 	k, err := x509.ParsePKCS1PrivateKey([]byte(key))
 	return k, err
 }
-func CheckKey(key *rsa.PrivateKey, self bool) (string, int) {
-	key, err := CheckKeyWithoutType(key)
-	if err != WATER_KEY_CHECK_OK {
-		return "", err
+
+func CheckPublicKey(key *rsa.PrivateKey) int {
+	if err := key.Validate(); err != nil {
+		g.Log().Error(err)
+		return WATER_KEY_CHECK_TEST_FAILED
 	}
-	k, _ := crypto.NewKeyFromArmored(key)
-	if k.IsPrivate() != self {
-		return "", WATER_KEY_CHECK_TYPE_ERROR
+	if key.Size() != 4096 {
+		return WATER_KEY_CHECK_WRONG_SIZE
 	}
-	return key, WATER_KEY_CHECK_OK
+	return WATER_KEY_CHECK_OK
 }
 
-func CheckKeyWithoutType(key string) (string, int) {
-	k, err := crypto.NewKeyFromArmored(key)
-	kstring, _ := k.ArmorWithCustomHeaders("", "")
-	if err != nil {
-		return "", WATER_KEY_CHECK_TEST_FAILED
+func CheckPrivateKey(key *rsa.PrivateKey) int {
+	if err := key.Validate(); err != nil {
+		g.Log().Error(err)
+		return WATER_KEY_CHECK_TEST_FAILED
 	}
-	if (!k.CanVerify()) || (!k.CanEncrypt()) {
-		return "", WATER_KEY_CHECK_USELESS
+	if key.Size() != 4096 {
+		return WATER_KEY_CHECK_WRONG_SIZE
 	}
-	if k.IsExpired() {
-		return "", WATER_KEY_CHECK_EXPIRED
-	}
-	return kstring, WATER_KEY_CHECK_OK
+	return WATER_KEY_CHECK_OK
 }
 
-func GetKeyID(key string) (string, error) {
-	k, err := crypto.NewKeyFromArmored(key)
-	if err != nil {
-		return "", err
-	}
-	kp, err := k.ToPublic()
-	if err != nil {
-		return "", err
-	}
-	// regenerate a clean key without header
-	// to avoid the key id being changed
-	ks, _ := kp.ArmorWithCustomHeaders("", "")
+func GetKeyID(key *rsa.PublicKey) (string, error) {
 	// use sha512 to get fingerprint
-	h := sha512.New()
-	h.Write([]byte(ks))
-	return hex.EncodeToString(h.Sum(nil)), nil
-}
-
-func MustCheckKey(key string, self bool) int {
-	_, err := CheckKey(key, self)
-	return err
-}
-
-func GenerateKey() (*rsa.PrivateKey, error) {
-	// generate a new rsa 4096 bits key
-	k, err := rsa.GenerateKey(rand.Reader, 4096)
-	return k, err
+	return "", nil
+	// h := sha512.New()
+	// h.Write([]byte(ks))
+	// return hex.EncodeToString(h.Sum(nil)), nil
 }
