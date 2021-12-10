@@ -4,7 +4,10 @@ import (
 	"context"
 	"crypto/rand"
 	"crypto/rsa"
+	"crypto/sha512"
 	"crypto/x509"
+	"encoding/binary"
+	"encoding/hex"
 	"sea/app/dao"
 	"sea/app/model"
 
@@ -48,15 +51,16 @@ func (s *waterKeyService) GetSelfKey(ctx context.Context) (waterKey, error) {
 }
 
 // AddKey add a key to the database
-func (s *waterKeyService) AddKey(ctx context.Context, key *rsa.PrivateKey, self bool) (waterKey, error) {
-	key, e := CheckKey(key, self)
+func (s *waterKeyService) AddKey(ctx context.Context, key *rsa.PublicKey, self bool) (waterKey, error) {
+	e := CheckPublicKey(key)
 	if e != WATER_KEY_CHECK_OK {
 		return waterKey{}, gerror.New("key check failed")
 	}
 	kid, _ := GetKeyID(key)
+	kpack, _ := PackPublicKey(key)
 	m := &model.Water{
 		WaterId: kid,
-		Key:     key,
+		Key:     kpack,
 		IsSelf:  self,
 	}
 	_, err := dao.Water.Ctx(ctx).Insert(m)
@@ -74,11 +78,12 @@ func (s *waterKeyService) AddSelfKey(ctx context.Context, key *rsa.PrivateKey) (
 	if e != WATER_KEY_CHECK_OK {
 		return waterKey{}, gerror.New("key check failed")
 	}
-	kid, _ := GetKeyID(key)
+	kid, _ := GetKeyID(&key.PublicKey)
+	kpack, _ := PackPrivateKey(key)
 	m := &model.Water{
 		WaterId: kid,
-		Key:     key,
-		IsSelf:  self,
+		Key:     kpack,
+		IsSelf:  true,
 	}
 	_, err := dao.Water.Ctx(ctx).Insert(m)
 	if err != nil {
@@ -110,11 +115,11 @@ func (s *waterKeyService) GetKeyByString(ctx context.Context, ks string) (waterK
 	return s.GetKeyByID(ctx, kid)
 }
 
-func (s *waterKey) getKey() (*crypto.Key, error) {
+func (s *waterKey) getKey() (string, error) {
 	m := new(model.Water)
 	err := dao.Water.Ctx(*s.ctx).Where(dao.Water.WaterDao.Columns.WaterId, s.id).Scan(m)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 	k, err := crypto.NewKeyFromArmored(m.Key)
 	return k, err
@@ -272,11 +277,7 @@ func UnpackPrivateKey(key string) (*rsa.PrivateKey, error) {
 	return k, err
 }
 
-func CheckPublicKey(key *rsa.PrivateKey) int {
-	if err := key.Validate(); err != nil {
-		g.Log().Error(err)
-		return WATER_KEY_CHECK_TEST_FAILED
-	}
+func CheckPublicKey(key *rsa.PublicKey) int {
 	if key.Size() != 4096 {
 		return WATER_KEY_CHECK_WRONG_SIZE
 	}
@@ -294,10 +295,18 @@ func CheckPrivateKey(key *rsa.PrivateKey) int {
 	return WATER_KEY_CHECK_OK
 }
 
+// todo
 func GetKeyID(key *rsa.PublicKey) (string, error) {
 	// use sha512 to get fingerprint
-	return "", nil
-	// h := sha512.New()
-	// h.Write([]byte(ks))
-	// return hex.EncodeToString(h.Sum(nil)), nil
+	h := sha512.New()
+	h.Write(key.N.Bytes())
+	// convert key.E to byte[]
+	e := make([]byte, 4)
+	binary.BigEndian.PutUint32(e, uint32(key.E))
+	h.Write(e)
+	// get hash
+	hashed := h.Sum(nil)
+	// convert to hex
+	sum := hex.EncodeToString(hashed)
+	return sum, nil
 }
