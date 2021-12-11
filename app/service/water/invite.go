@@ -4,7 +4,6 @@ import (
 	"context"
 	"sea/app/dao"
 
-	"github.com/ProtonMail/gopenpgp/v2/helper"
 	"github.com/gogf/gf/v2/container/gvar"
 	"github.com/gogf/gf/v2/database/gdb"
 	"github.com/gogf/gf/v2/errors/gerror"
@@ -53,6 +52,15 @@ func (*waterInviteService) MakeStep1Pack(session string, key *waterKey, hash str
 	}
 	return gvar.New(r)
 }
+
+func (*waterInviteService) MakeStep2Pack(session string, random string) *gvar.Var {
+	r := WaterInviteStep2Pack{
+		Session:      session,
+		RandomString: random,
+	}
+	return gvar.New(r)
+}
+
 func (s *waterInviteService) InviteStep1(c context.Context, senderPublicKey string) (encryptedReceiverPublicKey string, returnCode int) {
 	wrap := func(ctx context.Context, tx *gdb.TX) error {
 		encryptedReceiverPublicKey, returnCode = s.inviteStep1(ctx, tx, senderPublicKey)
@@ -129,7 +137,11 @@ func (s *waterInviteService) inviteStep2(ctx context.Context, tx *gdb.TX, encryp
 	if err != nil {
 		return INVITE_RETURN_CODE_SERVER_ERROR
 	}
-	selfKeyString, _ := selfWaterKey.GetPrivateKey()
-	helper.DecryptMessageArmored(selfKeyString, nil, encryptedRandomString)
+	// decrypt
+	r, err := selfWaterKey.DecryptJsonBase64(encryptedRandomString)
+	if err != nil {
+		return INVITE_RETURN_CODE_DECRYPTION_FAILED
+	}
+	_ = r // todo
 	return 0
 }

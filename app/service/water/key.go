@@ -252,6 +252,26 @@ func (s *waterKey) DecryptBytes(m []byte) ([]byte, error) {
 	return rsa.DecryptOAEP(hash, rand.Reader, k, m, nil)
 }
 
+func (s *waterKey) EncryptString(m string) (string, error) {
+	mBytes, err := s.EncryptBytes([]byte(m))
+	if err != nil {
+		return "", err
+	}
+	return gbase64.EncodeToString(mBytes), nil
+}
+
+func (s *waterKey) DecryptString(m string) (string, error) {
+	mBytes, err := gbase64.DecodeString(m)
+	if err != nil {
+		return "", err
+	}
+	mBytes, err = s.DecryptBytes(mBytes)
+	if err != nil {
+		return "", err
+	}
+	return string(mBytes), nil
+}
+
 func (s *waterKey) EncryptJsonBase64(m *gvar.Var) (string, error) {
 	b, err := m.MarshalJSON()
 	if err != nil {
