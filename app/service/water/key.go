@@ -11,10 +11,8 @@ import (
 	"sea/app/dao"
 	"sea/app/model"
 
-	"github.com/ProtonMail/gopenpgp/v2/crypto"
-	"github.com/gogf/gf/frame/g"
-	"github.com/gogf/gf/util/grand"
 	"github.com/gogf/gf/v2/errors/gerror"
+	"github.com/gogf/gf/v2/util/grand"
 )
 
 // manage all keys and sessions
@@ -104,11 +102,15 @@ func (s *waterKeyService) GetKeyByID(ctx context.Context, id string) (waterKey, 
 
 // GetKeyByString returns the key by string
 func (s *waterKeyService) GetKeyByString(ctx context.Context, ks string) (waterKey, error) {
-	ks, c := CheckKeyWithoutType(ks)
-	if c != WATER_KEY_CHECK_OK {
+	k, err := UnpackPublicKey(ks, true)
+	if err != nil {
+		return waterKey{}, gerror.New("unpack failed")
+	}
+	e := CheckPublicKey(k)
+	if e != WATER_KEY_CHECK_OK {
 		return waterKey{}, gerror.New("key check failed")
 	}
-	kid, err := GetKeyID(ks)
+	kid, err := GetKeyID(k)
 	if err != nil {
 		return waterKey{}, err
 	}
@@ -121,33 +123,23 @@ func (s *waterKey) getKey() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	k, err := crypto.NewKeyFromArmored(m.Key)
-	return k, err
+	return m.Key, nil
 }
 
-func (s *waterKey) GetPrivateKey() (string, error) {
+func (s *waterKey) GetPrivateKey() (*rsa.PrivateKey, error) {
 	k, err := s.getKey()
 	if err != nil {
-		return "", err
+		return nil, err
 	}
-	if !k.IsPrivate() {
-		return "", gerror.New("not private key")
-	}
-	ks, _ := k.ArmorWithCustomHeaders("", "")
-	return ks, nil
+	return UnpackPrivateKey(k)
 }
 
-func (s *waterKey) GetPublicKey() (string, error) {
+func (s *waterKey) GetPublicKey() (*rsa.PublicKey, error) {
 	k, err := s.getKey()
 	if err != nil {
-		return "", err
+		return nil, err
 	}
-	kp, err := k.ToPublic()
-	if err != nil {
-		return "", err
-	}
-	kps, _ := kp.ArmorWithCustomHeaders("", "")
-	return kps, nil
+	return UnpackPublicKey(k, true)
 }
 
 func (s *waterKey) GetKeyID() string {
@@ -259,9 +251,17 @@ func PackPublicKey(key *rsa.PublicKey) (string, error) {
 	return string(k), nil
 }
 
-func UnpackPublicKey(key string) (*rsa.PublicKey, error) {
+func UnpackPublicKey(key string, check bool) (*rsa.PublicKey, error) {
 	// use x509 pkcs1 to unpack public key
 	k, err := x509.ParsePKCS1PublicKey([]byte(key))
+	if (err != nil) && check {
+		// maybe it's private key
+		pk, err := UnpackPrivateKey(key)
+		if err != nil {
+			return nil, err
+		}
+		return &pk.PublicKey, nil
+	}
 	return k, err
 }
 
@@ -286,7 +286,6 @@ func CheckPublicKey(key *rsa.PublicKey) int {
 
 func CheckPrivateKey(key *rsa.PrivateKey) int {
 	if err := key.Validate(); err != nil {
-		g.Log().Error(err)
 		return WATER_KEY_CHECK_TEST_FAILED
 	}
 	if key.Size() != 4096 {
@@ -295,7 +294,6 @@ func CheckPrivateKey(key *rsa.PrivateKey) int {
 	return WATER_KEY_CHECK_OK
 }
 
-// todo
 func GetKeyID(key *rsa.PublicKey) (string, error) {
 	// use sha512 to get fingerprint
 	h := sha512.New()
