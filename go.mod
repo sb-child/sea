@@ -24,11 +24,8 @@ require (
 
 require (
 	github.com/ProtonMail/gopenpgp/v2 v2.3.0
-	github.com/gogf/gf v1.16.6
-	github.com/gogf/gf/v2 v2.0.0-beta.0.20211208115028-01930c9899e4
+	github.com/gogf/gf/v2 v2.0.0-beta.0.20211210171140-a1fb5f18dc86
 )
-
-require github.com/clbanning/mxj v1.8.5-0.20200714211355-ff02cfb8ea28 // indirect
 
 require (
 	github.com/ProtonMail/go-crypto v0.0.0-20211112122917-428f8eabeeb3 // indirect
@@ -37,7 +34,6 @@ require (
 	github.com/clbanning/mxj/v2 v2.5.5 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/go-redis/redis/v8 v8.11.4 // indirect
-	github.com/gomodule/redigo v1.8.5 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/sirupsen/logrus v1.8.1 // indirect
 	golang.org/x/crypto v0.0.0-20211202192323-5770296d904e // indirect

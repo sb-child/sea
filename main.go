@@ -29,9 +29,9 @@ func main() {
 		if err != nil {
 			g.Log().Fatal(ctx, err)
 		}
-		kid, _ := serviceWater.GetKeyID(ks)
+		kid, _ := serviceWater.GetKeyID(&ks.PublicKey)
 		g.Log().Infof(ctx, "Generated the key pair: %s", kid)
-		_, err = serviceWater.WaterKey.AddKey(context.Background(), ks, true)
+		_, err = serviceWater.WaterKey.AddSelfKey(context.Background(), ks)
 		if err != nil {
 			g.Log().Fatal(ctx, err)
 		}

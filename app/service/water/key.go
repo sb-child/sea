@@ -6,11 +6,13 @@ import (
 	"crypto/rsa"
 	"crypto/sha512"
 	"crypto/x509"
-	"encoding/binary"
 	"encoding/hex"
 	"sea/app/dao"
 	"sea/app/model"
 
+	"github.com/gogf/gf/v2/container/gvar"
+	"github.com/gogf/gf/v2/encoding/gbase64"
+	"github.com/gogf/gf/v2/encoding/gbinary"
 	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/util/grand"
 )
@@ -49,7 +51,7 @@ func (s *waterKeyService) GetSelfKey(ctx context.Context) (waterKey, error) {
 }
 
 // AddKey add a key to the database
-func (s *waterKeyService) AddKey(ctx context.Context, key *rsa.PublicKey, self bool) (waterKey, error) {
+func (s *waterKeyService) AddKey(ctx context.Context, key *rsa.PublicKey) (waterKey, error) {
 	e := CheckPublicKey(key)
 	if e != WATER_KEY_CHECK_OK {
 		return waterKey{}, gerror.New("key check failed")
@@ -59,7 +61,7 @@ func (s *waterKeyService) AddKey(ctx context.Context, key *rsa.PublicKey, self b
 	m := &model.Water{
 		WaterId: kid,
 		Key:     kpack,
-		IsSelf:  self,
+		IsSelf:  false,
 	}
 	_, err := dao.Water.Ctx(ctx).Insert(m)
 	if err != nil {
@@ -100,12 +102,7 @@ func (s *waterKeyService) GetKeyByID(ctx context.Context, id string) (waterKey, 
 	return waterKey{id: m.WaterId, ctx: &ctx}, nil
 }
 
-// GetKeyByString returns the key by string
-func (s *waterKeyService) GetKeyByString(ctx context.Context, ks string) (waterKey, error) {
-	k, err := UnpackPublicKey(ks, true)
-	if err != nil {
-		return waterKey{}, gerror.New("unpack failed")
-	}
+func (s *waterKeyService) GetKey(ctx context.Context, k *rsa.PublicKey) (waterKey, error) {
 	e := CheckPublicKey(k)
 	if e != WATER_KEY_CHECK_OK {
 		return waterKey{}, gerror.New("key check failed")
@@ -237,6 +234,50 @@ func (s *waterKey) DeleteKey() error {
 	return err
 }
 
+func (s *waterKey) EncryptBytes(m []byte) ([]byte, error) {
+	k, err := s.GetPublicKey()
+	if err != nil {
+		return nil, err
+	}
+	hash := sha512.New()
+	return rsa.EncryptOAEP(hash, rand.Reader, k, m, nil)
+}
+
+func (s *waterKey) DecryptBytes(m []byte) ([]byte, error) {
+	k, err := s.GetPrivateKey()
+	if err != nil {
+		return nil, err
+	}
+	hash := sha512.New()
+	return rsa.DecryptOAEP(hash, rand.Reader, k, m, nil)
+}
+
+func (s *waterKey) EncryptJsonBase64(m *gvar.Var) (string, error) {
+	b, err := m.MarshalJSON()
+	if err != nil {
+		return "", err
+	}
+	c, err := s.EncryptBytes(b)
+	if err != nil {
+		return "", err
+	}
+	return gbase64.EncodeToString(c), nil
+}
+
+func (s *waterKey) DecryptJsonBase64(m string) (*gvar.Var, error) {
+	b, err := gbase64.DecodeString(m)
+	if err != nil {
+		return nil, err
+	}
+	c, err := s.DecryptBytes(b)
+	if err != nil {
+		return nil, err
+	}
+	r := gvar.New("")
+	err = r.UnmarshalJSON(c)
+	return r, err
+}
+
 // --- utils ---
 
 func GenerateKey() (*rsa.PrivateKey, error) {
@@ -299,8 +340,7 @@ func GetKeyID(key *rsa.PublicKey) (string, error) {
 	h := sha512.New()
 	h.Write(key.N.Bytes())
 	// convert key.E to byte[]
-	e := make([]byte, 4)
-	binary.BigEndian.PutUint32(e, uint32(key.E))
+	e := gbinary.EncodeInt(key.E)
 	h.Write(e)
 	// get hash
 	hashed := h.Sum(nil)

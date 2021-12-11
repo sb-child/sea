@@ -2,12 +2,10 @@ package service
 
 import (
 	"context"
-	"fmt"
 	"sea/app/dao"
 
-	"github.com/ProtonMail/gopenpgp/v2/crypto"
 	"github.com/ProtonMail/gopenpgp/v2/helper"
-	"github.com/gogf/gf/encoding/gparser"
+	"github.com/gogf/gf/v2/container/gvar"
 	"github.com/gogf/gf/v2/database/gdb"
 	"github.com/gogf/gf/v2/errors/gerror"
 )
@@ -25,6 +23,7 @@ const (
 	INVITE_RETURN_CODE_BAD_RANDOM_STRING  = 5 // random string is not 32 characters long
 	INVITE_RETURN_CODE_KEY_ALREADY_EXISTS = 6 // this key already exists
 	INVITE_RETURN_CODE_SERVER_ERROR       = 7 // server isn't ready
+	INVITE_RETURN_CODE_BANNED             = 8 // key is banned
 )
 
 type WaterInviteStep1Pack struct {
@@ -38,13 +37,21 @@ type WaterInviteStep2Pack struct {
 	RandomString string `json:"random"` // a 32 character random string
 }
 
-func (*waterInviteService) MakeStep1Pack(session, key, hash string) string {
-	r := gparser.New(WaterInviteStep1Pack{
+func (*waterInviteService) MakeStep1Pack(session string, key *waterKey, hash string) *gvar.Var {
+	k, err := key.GetPublicKey()
+	if err != nil {
+		return nil
+	}
+	ks, err := PackPublicKey(k)
+	if err != nil {
+		return nil
+	}
+	r := WaterInviteStep1Pack{
 		Session:                    session,
-		ReceiverPublicKey:          key,
+		ReceiverPublicKey:          ks,
 		SenderPublicKeyFingerprint: hash,
-	})
-	return r.MustToJsonString()
+	}
+	return gvar.New(r)
 }
 func (s *waterInviteService) InviteStep1(c context.Context, senderPublicKey string) (encryptedReceiverPublicKey string, returnCode int) {
 	wrap := func(ctx context.Context, tx *gdb.TX) error {
@@ -61,24 +68,22 @@ func (s *waterInviteService) InviteStep1(c context.Context, senderPublicKey stri
 }
 func (s *waterInviteService) inviteStep1(ctx context.Context, tx *gdb.TX, senderPublicKey string) (string, int) {
 	// ensure this key is valid
-	k, err := crypto.NewKeyFromArmored(senderPublicKey)
+	k, err := UnpackPublicKey(senderPublicKey, false)
 	if err != nil {
-		return "1", INVITE_RETURN_CODE_BAD_KEY
+		return "", INVITE_RETURN_CODE_BAD_KEY
 	}
-	ks, _ := k.ArmorWithCustomHeaders("", "")
-	if MustCheckKey(ks, false) != WATER_KEY_CHECK_OK {
-		fmt.Println(MustCheckKey(ks, false))
-		return "2", INVITE_RETURN_CODE_BAD_KEY
+	if CheckPublicKey(k) != WATER_KEY_CHECK_OK {
+		return "", INVITE_RETURN_CODE_BAD_KEY
 	}
 	// the key is valid, now check if it's banned
-	wk, err := WaterKey.GetKeyByString(ctx, ks)
+	wk, err := WaterKey.GetKey(ctx, k)
 	// if the key is not found, it's not banned
 	// if the key is found, but the status is not banned, it's not banned
-	if (err == nil) || (wk.IsBanned()) {
-		return "3", INVITE_RETURN_CODE_BAD_KEY
+	if (err == nil) && (wk.IsBanned()) {
+		return "", INVITE_RETURN_CODE_BANNED
 	}
 	// add it to database
-	senderWaterKey, err := WaterKey.AddKey(ctx, ks, false)
+	senderWaterKey, err := WaterKey.AddKey(ctx, k)
 	if err != nil {
 		return "", INVITE_RETURN_CODE_KEY_ALREADY_EXISTS
 	}
@@ -92,13 +97,12 @@ func (s *waterInviteService) inviteStep1(ctx context.Context, tx *gdb.TX, sender
 	if err != nil {
 		return "", INVITE_RETURN_CODE_SERVER_ERROR
 	}
-	publicSelfKey, _ := selfWaterKey.GetPublicKey()
 	// encrypt and response
-	es, err := helper.EncryptMessageArmored(
-		publicSelfKey, s.MakeStep1Pack(
+	es, err := selfWaterKey.EncryptJsonBase64(
+		s.MakeStep1Pack(
 			session,
-			publicSelfKey,
-			k.GetFingerprint(),
+			&selfWaterKey,
+			senderWaterKey.GetKeyID(),
 		),
 	)
 	if err != nil {
