@@ -6,7 +6,6 @@ import (
 	"crypto/rsa"
 	"crypto/sha512"
 	"crypto/x509"
-	"encoding/hex"
 	"encoding/pem"
 	"sea/app/dao"
 	"sea/app/model"
@@ -376,7 +375,7 @@ func GetKeyID(key *rsa.PublicKey) (string, error) {
 	h.Write(e)
 	// get hash
 	hashed := h.Sum(nil)
-	// convert to hex
-	sum := hex.EncodeToString(hashed)
+	// convert to base64
+	sum := gbase64.EncodeToString(hashed)
 	return sum, nil
 }
