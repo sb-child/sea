@@ -39,8 +39,9 @@ func main() {
 	} else {
 		g.Log().Infof(ctx, "Got the key pair: %s", k.GetKeyID())
 	}
+	k, _ = serviceWater.WaterKey.GetSelfKey(context.Background()) // refresh the key
 	if p, err := k.GetPublicKey(); err == nil {
-		g.Log().Infof(ctx, "Public key: \n%s", p)
+		g.Log().Info(ctx, "Public key: \n", p)
 	} else {
 		g.Log().Fatal(ctx, err)
 	}

@@ -7,6 +7,7 @@ import (
 	"crypto/sha512"
 	"crypto/x509"
 	"encoding/hex"
+	"encoding/pem"
 	"sea/app/dao"
 	"sea/app/model"
 
@@ -310,12 +311,17 @@ func GenerateKey() (*rsa.PrivateKey, error) {
 func PackPublicKey(key *rsa.PublicKey) (string, error) {
 	// use x509 pkcs1 to pack public key
 	k := x509.MarshalPKCS1PublicKey(key)
-	return string(k), nil
+	block := &pem.Block{
+		Type:  "RSA PUBLIC KEY",
+		Bytes: k,
+	}
+	return string(pem.EncodeToMemory(block)), nil
 }
 
 func UnpackPublicKey(key string, check bool) (*rsa.PublicKey, error) {
 	// use x509 pkcs1 to unpack public key
-	k, err := x509.ParsePKCS1PublicKey([]byte(key))
+	block, _ := pem.Decode([]byte(key))
+	k, err := x509.ParsePKCS1PublicKey(block.Bytes)
 	if (err != nil) && check {
 		// maybe it's private key
 		pk, err := UnpackPrivateKey(key)
@@ -330,12 +336,17 @@ func UnpackPublicKey(key string, check bool) (*rsa.PublicKey, error) {
 func PackPrivateKey(key *rsa.PrivateKey) (string, error) {
 	// use x509 pkcs1 to pack private key
 	k := x509.MarshalPKCS1PrivateKey(key)
-	return string(k), nil
+	block := &pem.Block{
+		Type:  "RSA PRIVATE KEY",
+		Bytes: k,
+	}
+	return string(pem.EncodeToMemory(block)), nil
 }
 
 func UnpackPrivateKey(key string) (*rsa.PrivateKey, error) {
 	// use x509 pkcs1 to unpack private key
-	k, err := x509.ParsePKCS1PrivateKey([]byte(key))
+	block, _ := pem.Decode([]byte(key))
+	k, err := x509.ParsePKCS1PrivateKey(block.Bytes)
 	return k, err
 }
 
@@ -350,7 +361,7 @@ func CheckPrivateKey(key *rsa.PrivateKey) int {
 	if err := key.Validate(); err != nil {
 		return WATER_KEY_CHECK_TEST_FAILED
 	}
-	if key.Size() != 4096 {
+	if key.Size() != (4096 / 8) { // 4096 bits = 4096/8 bytes
 		return WATER_KEY_CHECK_WRONG_SIZE
 	}
 	return WATER_KEY_CHECK_OK
