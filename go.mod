@@ -22,21 +22,14 @@ require (
 	golang.org/x/text v0.3.8-0.20211105212822-18b340fc7af2 // indirect
 )
 
-require (
-	github.com/gogf/gf/v2 v2.0.0-beta.0.20211210171140-a1fb5f18dc86
-)
+require github.com/gogf/gf/v2 v2.0.0-beta.0.20211210171140-a1fb5f18dc86
 
 require (
-	github.com/ProtonMail/go-crypto v0.0.0-20211112122917-428f8eabeeb3 // indirect
-	github.com/ProtonMail/go-mime v0.0.0-20190923161245-9b5a4261663a // indirect
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
 	github.com/clbanning/mxj/v2 v2.5.5 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/go-logr/logr v1.2.1 // indirect
 	github.com/go-logr/stdr v1.2.0 // indirect
 	github.com/go-redis/redis/v8 v8.11.4 // indirect
-	github.com/pkg/errors v0.9.1 // indirect
-	github.com/sirupsen/logrus v1.8.1 // indirect
-	golang.org/x/crypto v0.0.0-20211209193657-4570a0811e8b // indirect
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
 )
