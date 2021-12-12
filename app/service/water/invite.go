@@ -28,7 +28,7 @@ const (
 type WaterInviteStep1Pack struct {
 	Session                    string `json:"session"` // a 64 character random string
 	SenderPublicKeyFingerprint string `json:"sender"`
-	ReceiverPublicKey          string `json:"receiver"`
+	ReceiverPublicKey          string `json:"receiver"` // public key of the receiver(server)
 }
 
 type WaterInviteStep2Pack struct {
@@ -36,8 +36,8 @@ type WaterInviteStep2Pack struct {
 	RandomString string `json:"random"` // a 32 character random string
 }
 
-func (*waterInviteService) MakeStep1Pack(session string, key *waterKey, hash string) *gvar.Var {
-	k, err := key.GetPublicKey()
+func (*waterInviteService) MakeStep1Pack(session string, recvKey, sendKey *waterKey) *gvar.Var {
+	k, err := recvKey.GetPublicKey()
 	if err != nil {
 		return nil
 	}
@@ -48,7 +48,7 @@ func (*waterInviteService) MakeStep1Pack(session string, key *waterKey, hash str
 	r := WaterInviteStep1Pack{
 		Session:                    session,
 		ReceiverPublicKey:          ks,
-		SenderPublicKeyFingerprint: hash,
+		SenderPublicKeyFingerprint: sendKey.GetKeyID(),
 	}
 	return gvar.New(r)
 }
@@ -106,11 +106,11 @@ func (s *waterInviteService) inviteStep1(ctx context.Context, tx *gdb.TX, sender
 		return "", INVITE_RETURN_CODE_SERVER_ERROR
 	}
 	// encrypt and response
-	es, err := selfWaterKey.EncryptJsonBase64(
+	es, err := senderWaterKey.EncryptJsonBase64(
 		s.MakeStep1Pack(
 			session,
 			&selfWaterKey,
-			senderWaterKey.GetKeyID(),
+			&senderWaterKey,
 		),
 	)
 	if err != nil {

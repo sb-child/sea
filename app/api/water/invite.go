@@ -22,7 +22,7 @@ var WaterInvite = waterInviteApi{}
 type waterInviteApi struct{}
 
 type WaterInviteStep1Req struct {
-	SenderPublicKey string `json:"sender"` // a 4096 bits OpenPGP public key
+	SenderPublicKey string `json:"sender"` // a 4096 bits rsa public key from sender(client)
 }
 
 type WaterInviteStep1Resp struct {

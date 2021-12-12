@@ -143,6 +143,7 @@ func (s *waterKey) GetKeyID() string {
 	return s.id
 }
 
+// todo: unsafe code
 func (s *waterKey) SetKey(k string) error {
 	_, err := dao.Water.Ctx(*s.ctx).
 		Where(model.Water{WaterId: s.id}).
