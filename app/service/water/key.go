@@ -43,7 +43,10 @@ const (
 // GetSelfKeyID returns the self key ID (same as water ID)
 func (s *waterKeyService) GetSelfKey(ctx context.Context) (waterKey, error) {
 	m := new(model.Water)
-	err := dao.Water.Ctx(ctx).Where(dao.Water.WaterDao.Columns.IsSelf, true).Scan(m)
+	err := dao.Water.Ctx(ctx).
+		Where(dao.Water.Columns.IsSelf, true).
+		Fields(dao.Water.Columns.WaterId).
+		Scan(m)
 	if err != nil {
 		return waterKey{}, err
 	}
@@ -95,7 +98,7 @@ func (s *waterKeyService) AddSelfKey(ctx context.Context, key *rsa.PrivateKey) (
 // GetKeyByID returns the key by ID
 func (s *waterKeyService) GetKeyByID(ctx context.Context, id string) (waterKey, error) {
 	m := new(model.Water)
-	err := dao.Water.Ctx(ctx).Where(dao.Water.WaterDao.Columns.WaterId, id).Scan(m)
+	err := dao.Water.Ctx(ctx).Where(dao.Water.Columns.WaterId, id).Scan(m)
 	if err != nil {
 		return waterKey{}, err
 	}
@@ -116,7 +119,9 @@ func (s *waterKeyService) GetKey(ctx context.Context, k *rsa.PublicKey) (waterKe
 
 func (s *waterKey) getKey() (string, error) {
 	m := new(model.Water)
-	err := dao.Water.Ctx(*s.ctx).Where(dao.Water.WaterDao.Columns.WaterId, s.id).Scan(m)
+	err := dao.Water.Ctx(*s.ctx).Where(dao.Water.Columns.WaterId, s.id).
+		Fields(dao.Water.Columns.Key).
+		Scan(m)
 	if err != nil {
 		return "", err
 	}
@@ -153,7 +158,9 @@ func (s *waterKey) SetKey(k string) error {
 
 func (s *waterKey) GetKeySession() (string, error) {
 	m := new(model.Water)
-	err := dao.Water.Ctx(*s.ctx).Where(dao.Water.WaterDao.Columns.WaterId, s.id).Scan(m)
+	err := dao.Water.Ctx(*s.ctx).Where(dao.Water.Columns.WaterId, s.id).
+		Fields(dao.Water.Columns.VerifySession).
+		Scan(m)
 	if err != nil {
 		return "", err
 	}
@@ -161,7 +168,7 @@ func (s *waterKey) GetKeySession() (string, error) {
 }
 
 func (s *waterKey) SetKeySession(sessionId string) error {
-	_, err := dao.Water.Ctx(*s.ctx).Where(dao.Water.WaterDao.Columns.WaterId, s.id).Update(model.Water{
+	_, err := dao.Water.Ctx(*s.ctx).Where(dao.Water.Columns.WaterId, s.id).Update(model.Water{
 		VerifySession: sessionId,
 	})
 	return err
@@ -175,7 +182,12 @@ func (s *waterKey) SetKeySessionRandom() (string, error) {
 
 func (s *waterKey) GetStatus() int {
 	m := new(model.Water)
-	err := dao.Water.Ctx(*s.ctx).Where(dao.Water.WaterDao.Columns.WaterId, s.id).Scan(m)
+	err := dao.Water.Ctx(*s.ctx).Where(dao.Water.Columns.WaterId, s.id).
+		Fields(
+			dao.Water.Columns.IsBanned,
+			dao.Water.Columns.IsReviewed,
+		).
+		Scan(m)
 	if err != nil {
 		return WATER_KEY_STATUS_NOT_FOUND
 	}
@@ -190,7 +202,9 @@ func (s *waterKey) GetStatus() int {
 
 func (s *waterKey) IsBanned() bool {
 	m := new(model.Water)
-	err := dao.Water.Ctx(*s.ctx).Where(dao.Water.WaterDao.Columns.WaterId, s.id).Scan(m)
+	err := dao.Water.Ctx(*s.ctx).Where(dao.Water.Columns.WaterId, s.id).
+		Fields(dao.Water.Columns.IsBanned).
+		Scan(m)
 	if err != nil {
 		return false
 	}
@@ -198,13 +212,15 @@ func (s *waterKey) IsBanned() bool {
 }
 
 func (s *waterKey) SetBanned(b bool) error {
-	_, err := dao.Water.Ctx(*s.ctx).Where(dao.Water.WaterDao.Columns.WaterId, s.id).Update(model.Water{IsBanned: b})
+	_, err := dao.Water.Ctx(*s.ctx).Where(dao.Water.Columns.WaterId, s.id).Update(model.Water{IsBanned: b})
 	return err
 }
 
 func (s *waterKey) IsReviewed() bool {
 	m := new(model.Water)
-	err := dao.Water.Ctx(*s.ctx).Where(dao.Water.WaterDao.Columns.WaterId, s.id).Scan(m)
+	err := dao.Water.Ctx(*s.ctx).Where(dao.Water.Columns.WaterId, s.id).
+		Fields(dao.Water.Columns.IsReviewed).
+		Scan(m)
 	if err != nil {
 		return false
 	}
@@ -212,13 +228,15 @@ func (s *waterKey) IsReviewed() bool {
 }
 
 func (s *waterKey) SetReviewed(b bool) error {
-	_, err := dao.Water.Ctx(*s.ctx).Where(dao.Water.WaterDao.Columns.WaterId, s.id).Update(model.Water{IsReviewed: b})
+	_, err := dao.Water.Ctx(*s.ctx).Where(dao.Water.Columns.WaterId, s.id).Update(model.Water{IsReviewed: b})
 	return err
 }
 
 func (s *waterKey) IsVerified() bool {
 	m := new(model.Water)
-	err := dao.Water.Ctx(*s.ctx).Where(dao.Water.WaterDao.Columns.WaterId, s.id).Scan(m)
+	err := dao.Water.Ctx(*s.ctx).Where(dao.Water.Columns.WaterId, s.id).
+		Fields(dao.Water.Columns.IsVerified).
+		Scan(m)
 	if err != nil {
 		return false
 	}
@@ -226,12 +244,12 @@ func (s *waterKey) IsVerified() bool {
 }
 
 func (s *waterKey) SetVerified(b bool) error {
-	_, err := dao.Water.Ctx(*s.ctx).Where(dao.Water.WaterDao.Columns.WaterId, s.id).Update(model.Water{IsVerified: b})
+	_, err := dao.Water.Ctx(*s.ctx).Where(dao.Water.Columns.WaterId, s.id).Update(model.Water{IsVerified: b})
 	return err
 }
 
 func (s *waterKey) DeleteKey() error {
-	_, err := dao.Water.Ctx(*s.ctx).Where(dao.Water.WaterDao.Columns.WaterId, s.id).Delete()
+	_, err := dao.Water.Ctx(*s.ctx).Where(dao.Water.Columns.WaterId, s.id).Delete()
 	return err
 }
 
