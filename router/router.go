@@ -47,6 +47,19 @@ func init() {
 		group.Group("/auth", v1WaterAuth)
 		group.Group("/sync", v1WaterSync)
 	}
+	// admin
+	v1AdminWater := func(group *ghttp.RouterGroup) {
+		// todo
+		group.POST("add", api.Hello)
+		group.POST("delete", api.Hello)
+		group.POST("query", api.Hello)
+		group.POST("edit", api.Hello)
+	}
+	v1Admin := func(group *ghttp.RouterGroup) {
+		// todo
+		group.Group("/auth", v1AdminWater)
+		group.Group("/water", v1AdminWater)
+	}
 	// main router
 	root := s.Group(rootURL.String())
 	root.Middleware(
@@ -56,5 +69,6 @@ func init() {
 	root.Group("/v1", func(group *ghttp.RouterGroup) {
 		group.Group("/water", v1Water)
 		group.Group("/user", v1User)
+		group.Group("/admin", v1Admin)
 	})
 }

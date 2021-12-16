@@ -84,9 +84,11 @@ func (s *waterKeyService) AddSelfKey(ctx context.Context, key *rsa.PrivateKey) (
 	kid, _ := GetKeyID(&key.PublicKey)
 	kpack, _ := PackPrivateKey(key)
 	m := &model.Water{
-		WaterId: kid,
-		Key:     kpack,
-		IsSelf:  true,
+		WaterId:    kid,
+		Key:        kpack,
+		IsSelf:     true,
+		IsVerified: true,
+		IsReviewed: true,
 	}
 	_, err := dao.Water.Ctx(ctx).Insert(m)
 	if err != nil {
