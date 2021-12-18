@@ -3,6 +3,7 @@ package router
 import (
 	"context"
 	"sea/app/api"
+	adminApi "sea/app/api/admin"
 	waterApi "sea/app/api/water"
 
 	"github.com/gogf/gf/v2/container/gvar"
@@ -50,10 +51,10 @@ func init() {
 	// admin
 	v1AdminWater := func(group *ghttp.RouterGroup) {
 		// todo
-		group.POST("add", api.Hello)
-		group.POST("delete", api.Hello)
-		group.POST("query", api.Hello)
-		group.POST("edit", api.Hello)
+		group.POST("add", adminApi.AdminWater.AddWater)
+		group.POST("delete", adminApi.AdminWater.DeleteWater)
+		group.POST("query", adminApi.AdminWater.QueryWater)
+		group.POST("edit", adminApi.AdminWater.EditWater)
 	}
 	v1Admin := func(group *ghttp.RouterGroup) {
 		// todo
