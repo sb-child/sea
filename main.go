@@ -6,6 +6,8 @@ import (
 	_ "sea/boot"
 	_ "sea/router"
 
+	bg "sea/app/background"
+
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gbuild"
 	_ "github.com/lib/pq"
@@ -46,7 +48,8 @@ func main() {
 		g.Log().Fatal(ctx, err)
 	}
 	// start background tasks
-	g.Log().Info(ctx, "Starting background tasks ...")
+	g.Log().Info(ctx, "Starting background worker ...")
+	bg.BindCliect(g.Client())
 	// todo
 	g.Log().Info(ctx, "Starting http server ...")
 	// run web server
