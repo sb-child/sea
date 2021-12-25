@@ -49,7 +49,8 @@ func main() {
 	}
 	// start background tasks
 	g.Log().Info(ctx, "Starting background worker ...")
-	bg.BindCliect(g.Client())
+	bg.Client = g.Client()
+	bg.Init()
 	// todo
 	g.Log().Info(ctx, "Starting http server ...")
 	// run web server
