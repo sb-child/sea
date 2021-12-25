@@ -22,7 +22,7 @@ require (
 	golang.org/x/text v0.3.8-0.20211105212822-18b340fc7af2 // indirect
 )
 
-require github.com/gogf/gf/v2 v2.0.0-beta.0.20211219163223-7e816007721a
+require github.com/gogf/gf/v2 v2.0.0-beta.0.20211223140028-b79e4a3ab7a9
 
 require (
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
