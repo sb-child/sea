@@ -1,9 +1,9 @@
 package api
 
 import (
-
 	"sea/app/service"
 	serviceWater "sea/app/service/water"
+	"sea/app/utils"
 
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/ghttp"
@@ -17,7 +17,7 @@ var WaterInvite = waterInviteApi{}
 type waterInviteApi struct{}
 
 type WaterInviteStep1Req struct {
-	SenderPublicKey string `json:"sender"` // a 4096 bits rsa public key from sender(client)
+	SenderPublicKey string `json:"sender" v:"required"` // a 4096 bits rsa public key from sender(client)
 }
 
 type WaterInviteStep1Resp struct {
@@ -26,7 +26,7 @@ type WaterInviteStep1Resp struct {
 }
 
 type WaterInviteStep2Req struct {
-	EncryptedRandomString string `json:"random"` // a encrypted pack for receiver
+	EncryptedRandomString string `json:"random" v:"required"` // a encrypted pack for receiver
 }
 
 type WaterInviteStep2Resp struct {
@@ -41,7 +41,9 @@ func WaterInviteApiMiddleware(r *ghttp.Request) {
 
 func (api *waterInviteApi) Step1(r *ghttp.Request) {
 	req := new(WaterInviteStep1Req)
-	r.Parse(req)
+	if err := r.Parse(&req); err != nil {
+		utils.ParseError(r, err)
+	}
 	k, c := serviceWater.WaterInvite.InviteStep1(r.Context(), req.SenderPublicKey)
 	r.Response.WriteJsonExit(WaterInviteStep1Resp{
 		EncryptedReceiverPublicKey: k,
@@ -50,7 +52,9 @@ func (api *waterInviteApi) Step1(r *ghttp.Request) {
 }
 func (*waterInviteApi) Step2(r *ghttp.Request) {
 	req := new(WaterInviteStep2Req)
-	r.Parse(req)
+	if err := r.Parse(&req); err != nil {
+		utils.ParseError(r, err)
+	}
 	c := serviceWater.WaterInvite.InviteStep2(r.Context(), req.EncryptedRandomString)
 	r.Response.WriteJson(WaterInviteStep2Resp{
 		ReturnCode: c,
@@ -59,19 +63,9 @@ func (*waterInviteApi) Step2(r *ghttp.Request) {
 
 func (*waterInviteApi) VerifyID(r *ghttp.Request) {
 	req := new(WaterInviteStep1Req)
-	r.Parse(req)
-
-	w, _ := service.Water.GetSelfWater()
-
-	r.Response.WriteJson(g.MapStrStr{
-		"WaterId": w.WaterId,
-		"SeaId":   "",
-	})
-}
-
-func (*waterInviteApi) Handler(r *ghttp.Request) {
-
-	service.Water.ReGenWaterID()
+	if err := r.Parse(&req); err != nil {
+		utils.ParseError(r, err)
+	}
 	w, _ := service.Water.GetSelfWater()
 	r.Response.WriteJson(g.MapStrStr{
 		"WaterId": w.WaterId,
