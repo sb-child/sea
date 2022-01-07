@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"context"
+	"sea/internal/handler"
 
 	"github.com/gogf/gf/v2/container/gvar"
 	"github.com/gogf/gf/v2/frame/g"
@@ -16,58 +17,60 @@ func routes(ctx context.Context, parser *gcmd.Parser) (err error) {
 		rootURL = gvar.New("/")
 	}
 	// user
-	v1UserAuth := func(group *ghttp.RouterGroup) {
-		// /v1/user/auth/login
-		group.POST("login", api.Hello.Index)
-	}
-	v1User := func(group *ghttp.RouterGroup) {
-		group.Group("/auth", v1UserAuth)
-	}
+	// v1UserAuth := func(group *ghttp.RouterGroup) {
+	// 	// /v1/user/auth/login
+	// 	group.POST("login", api.Hello.Index)
+	// }
+	// v1User := func(group *ghttp.RouterGroup) {
+	// 	group.Group("/auth", v1UserAuth)
+	// }
 	// water
-	v1WaterJoin := func(group *ghttp.RouterGroup) {
-		group.Middleware(
-			waterApi.WaterInviteApiMiddleware,
-		)
-		// /v1/water/auth/join/1
-		group.POST("1", waterApi.WaterInvite.Step1)
-		// /v1/water/auth/join/2
-		group.POST("2", waterApi.WaterInvite.Step2)
-	}
-	v1WaterAuth := func(group *ghttp.RouterGroup) {
-		group.Group("/join", v1WaterJoin)
-		// /v1/water/auth/login
-		group.POST("login", api.Water.VerifyID)
-	}
-	v1WaterSync := func(group *ghttp.RouterGroup) {
-		group.POST("event", api.Water.VerifyID)
-		group.POST("verify", api.Water.VerifyID)
-	}
+	// v1WaterJoin := func(group *ghttp.RouterGroup) {
+	// 	group.Middleware(
+	// 		waterApi.WaterInviteApiMiddleware,
+	// 	)
+	// 	// /v1/water/auth/join/1
+	// 	group.POST("1", waterApi.WaterInvite.Step1)
+	// 	// /v1/water/auth/join/2
+	// 	group.POST("2", waterApi.WaterInvite.Step2)
+	// }
+	// v1WaterAuth := func(group *ghttp.RouterGroup) {
+	// 	group.Group("/join", v1WaterJoin)
+	// 	// /v1/water/auth/login
+	// 	group.POST("login", api.Water.VerifyID)
+	// }
+	// v1WaterSync := func(group *ghttp.RouterGroup) {
+	// 	group.POST("event", api.Water.VerifyID)
+	// 	group.POST("verify", api.Water.VerifyID)
+	// }
 	v1Water := func(group *ghttp.RouterGroup) {
-		group.Group("/auth", v1WaterAuth)
-		group.Group("/sync", v1WaterSync)
+		// group.Group("/auth", v1WaterAuth)
+		// group.Group("/sync", v1WaterSync)
+		group.Bind(handler.Water)
 	}
 	// admin
-	v1AdminWater := func(group *ghttp.RouterGroup) {
-		// todo
-		group.POST("add", adminApi.AdminWater.AddWater)
-		group.POST("delete", adminApi.AdminWater.DeleteWater)
-		group.POST("query", adminApi.AdminWater.QueryWater)
-		group.POST("edit", adminApi.AdminWater.EditWater)
-	}
+	// v1AdminWater := func(group *ghttp.RouterGroup) {
+	// 	// todo
+	// 	group.POST("add", adminApi.AdminWater.AddWater)
+	// 	group.POST("delete", adminApi.AdminWater.DeleteWater)
+	// 	group.POST("query", adminApi.AdminWater.QueryWater)
+	// 	group.POST("edit", adminApi.AdminWater.EditWater)
+	// }
 	v1Admin := func(group *ghttp.RouterGroup) {
 		// todo
-		group.Group("/auth", v1AdminWater)
-		group.Group("/water", v1AdminWater)
+		// group.Group("/auth", v1AdminWater)
+		// group.Group("/water", v1AdminWater)
+		group.Bind(handler.Admin)
 	}
 	// main router
 	root := s.Group(rootURL.String())
 	root.Middleware(
-		api.HeaderMiddleware,
+		handler.HeaderMiddleware,
 	)
-	root.GET("/version", api.GetVersion)
+	// root.GET("/version", api.GetVersion)
 	root.Group("/v1", func(group *ghttp.RouterGroup) {
 		group.Group("/water", v1Water)
-		group.Group("/user", v1User)
+		// group.Group("/user", v1User)
 		group.Group("/admin", v1Admin)
 	})
 	s.Run()
