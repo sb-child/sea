@@ -13,7 +13,7 @@ type getVersionJson struct {
 	BuildInfo map[string]string `json:"info"`
 }
 
-func (*getVersionApi) Index(r *ghttp.Request) {
+func (*getVersionApi) BuildInfo(r *ghttp.Request) {
 	r.Response.WriteJsonExit(&getVersionJson{
 		BuildInfo: gbuild.Info(),
 	})

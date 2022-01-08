@@ -11,6 +11,13 @@ import (
 // 	g.Meta `mime:"text/html" example:"string"`
 // }
 
+type VersionReq struct {
+	g.Meta `path:"/ver" method:"get"`
+}
+type VersionRes struct {
+	g.Meta `mime:"application/json"`
+}
+
 type WaterApiInviteStep1Req struct {
 	g.Meta `path:"/auth/join/1" method:"post"`
 }
