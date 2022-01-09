@@ -4,6 +4,7 @@ import (
 	bgWater "sea/internal/background/water"
 	"sea/internal/utils"
 
+	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/ghttp"
 )
 
@@ -14,6 +15,9 @@ type adminWater struct{}
 type AddWaterReq struct {
 	URL string `json:"url" v:"required"`
 }
+type AddWaterResp struct {
+	URL string `json:"url"`
+}
 
 func (api *adminWater) AddWater(r *ghttp.Request) {
 	req := new(AddWaterReq)
@@ -21,6 +25,8 @@ func (api *adminWater) AddWater(r *ghttp.Request) {
 		utils.ParseError(r, err)
 	}
 	bgWater.WaterManager.AddWater(r.Context(), "")
+	g.Log().Debugf(r.Context(), "url: %s", req.URL)
+	r.Response.WriteJsonExit(AddWaterResp{URL: req.URL})
 }
 
 func (api *adminWater) EditWater(r *ghttp.Request) {

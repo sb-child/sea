@@ -19,7 +19,7 @@ func start(ctx context.Context, parser *gcmd.Parser) (err error) {
 	// display welcome info
 	welcome(ctx)
 	// check the key pair exists
-	g.Log().Info(ctx, "Checking the key pair ...")
+	g.Log().Info(ctx, "Checking main key pair ...")
 	checkKeyPair(ctx)
 	// start background tasks
 	g.Log().Info(ctx, "Starting background worker ...")
@@ -34,7 +34,7 @@ func welcome(ctx context.Context) {
 	g.Log().Info(ctx, "Starting the chat server - Sea ...")
 	buildInfo := gbuild.Info()
 	if buildInfo["gf"] == "" {
-		g.Log().Warning(ctx, "(debug version)")
+		g.Log().Warning(ctx, "(debug build, use `gf build` to build for release)")
 	} else {
 		g.Log().Infof(ctx, "built at %s in %s with gf%s", buildInfo["time"], buildInfo["go"], buildInfo["gf"])
 		g.Log().Infof(ctx, "commit: %s", buildInfo["git"])
@@ -44,24 +44,35 @@ func welcome(ctx context.Context) {
 func checkKeyPair(ctx context.Context) {
 	k, err := serviceWater.WaterKey.GetSelfKey(context.Background())
 	if err != nil {
-		g.Log().Warningf(ctx, "Failed to get the key pair: %s, will generate...", err.Error())
+		g.Log().Warningf(ctx, "Failed to get key pair: %s, will generate...", err.Error())
 		ks, err := serviceWater.GenerateKey()
 		if err != nil {
 			g.Log().Fatal(ctx, err)
 		}
 		kid, _ := serviceWater.GetKeyID(&ks.PublicKey)
-		g.Log().Infof(ctx, "Generated the key pair: %s", kid)
+		g.Log().Infof(ctx, "Generated key pair: %s", kid)
 		_, err = serviceWater.WaterKey.AddSelfKey(context.Background(), ks)
 		if err != nil {
 			g.Log().Fatal(ctx, err)
 		}
-		g.Log().Infof(ctx, "Added the key pair to database.")
+		g.Log().Infof(ctx, "Added key pair to database.")
 	} else {
-		g.Log().Infof(ctx, "Got the key pair: %s", k.GetKeyID())
+		g.Log().Infof(ctx, "Got key pair: %s", k.GetKeyID())
 	}
-	k, _ = serviceWater.WaterKey.GetSelfKey(context.Background()) // refresh the key
-	if p, err := k.GetPublicKey(); err == nil {
-		g.Log().Info(ctx, "Public key: \n", p)
+	k, _ = serviceWater.WaterKey.GetSelfKey(ctx) // refresh the key
+	if kp, err := k.GetPublicKey(); (err == nil) && (kp != nil) {
+		kid, err := serviceWater.GetKeyID(kp)
+		if (kid == "") || (err != nil) || (k.GetKeyID() != kid) {
+			g.Log().Warningf(ctx, "Key ID should be: %s", kid)
+			g.Log().Warningf(ctx, "but got         : %s", k.GetKeyID())
+			g.Log().Fatal(ctx, "Key ID mismatch, please remove this key pair and generate a new one.")
+		}
+		g.Log().Info(ctx, "Public key test passed.")
+	} else {
+		g.Log().Fatal(ctx, err)
+	}
+	if kp, err := k.GetPrivateKey(); (err == nil) && (kp.Validate() == nil) {
+		g.Log().Info(ctx, "Private key test passed.")
 	} else {
 		g.Log().Fatal(ctx, err)
 	}
