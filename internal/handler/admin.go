@@ -4,8 +4,6 @@ import (
 	"context"
 
 	"sea/apiv1"
-
-	"github.com/gogf/gf/v2/frame/g"
 )
 
 var (
@@ -20,16 +18,16 @@ func (h *hAdmin) WaterAdd(ctx context.Context, req *apiv1.AdminWaterAddReq) (res
 }
 
 func (h *hAdmin) WaterDelete(ctx context.Context, req *apiv1.AdminWaterDeleteReq) (res *apiv1.AdminWaterDeleteRes, err error) {
-	apiv1.AdminWater.DeleteWater(g.RequestFromCtx(ctx))
+	res, err = apiv1.AdminWater.DeleteWater(ctx, req)
 	return
 }
 
 func (h *hAdmin) WaterEdit(ctx context.Context, req *apiv1.AdminWaterEditReq) (res *apiv1.AdminWaterEditRes, err error) {
-	apiv1.AdminWater.EditWater(g.RequestFromCtx(ctx))
+	res, err = apiv1.AdminWater.EditWater(ctx, req)
 	return
 }
 
 func (h *hAdmin) WaterQuery(ctx context.Context, req *apiv1.AdminWaterQueryReq) (res *apiv1.AdminWaterQueryRes, err error) {
-	apiv1.AdminWater.QueryWater(g.RequestFromCtx(ctx))
+	res, err = apiv1.AdminWater.QueryWater(ctx, req)
 	return
 }

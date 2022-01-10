@@ -5,7 +5,6 @@ import (
 	bgWater "sea/internal/background/water"
 
 	"github.com/gogf/gf/v2/frame/g"
-	"github.com/gogf/gf/v2/net/ghttp"
 )
 
 var AdminWater = adminWater{}
@@ -18,14 +17,14 @@ func (api *adminWater) AddWater(ctx context.Context, req *AdminWaterAddReq) (*Ad
 	return &AdminWaterAddRes{ReturnCode: 0}, nil
 }
 
-func (api *adminWater) EditWater(r *ghttp.Request) {
-
+func (api *adminWater) EditWater(ctx context.Context, req *AdminWaterEditReq) (*AdminWaterEditRes, error) {
+	return &AdminWaterEditRes{}, nil
 }
 
-func (api *adminWater) DeleteWater(r *ghttp.Request) {
-
+func (api *adminWater) DeleteWater(ctx context.Context, req *AdminWaterDeleteReq) (*AdminWaterDeleteRes, error) {
+	return &AdminWaterDeleteRes{}, nil
 }
 
-func (api *adminWater) QueryWater(r *ghttp.Request) {
-
+func (api *adminWater) QueryWater(ctx context.Context, req *AdminWaterQueryReq) (*AdminWaterQueryRes, error) {
+	return &AdminWaterQueryRes{}, nil
 }
