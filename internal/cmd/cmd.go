@@ -4,7 +4,7 @@ import (
 	"context"
 	bg "sea/internal/background"
 	"sea/internal/handler"
-	serviceWater "sea/internal/service/water"
+	"sea/internal/service"
 
 	_ "github.com/lib/pq"
 
@@ -42,16 +42,16 @@ func welcome(ctx context.Context) {
 }
 
 func checkKeyPair(ctx context.Context) {
-	k, err := serviceWater.WaterKey.GetSelfKey(context.Background())
+	k, err := service.WaterKey.GetSelfKey(context.Background())
 	if err != nil {
 		g.Log().Warningf(ctx, "Failed to get key pair: %s, will generate...", err.Error())
-		ks, err := serviceWater.GenerateKey()
+		ks, err := service.GenerateKey()
 		if err != nil {
 			g.Log().Fatal(ctx, err)
 		}
-		kid, _ := serviceWater.GetKeyID(&ks.PublicKey)
+		kid, _ := service.GetKeyID(&ks.PublicKey)
 		g.Log().Infof(ctx, "Generated key pair: %s", kid)
-		_, err = serviceWater.WaterKey.AddSelfKey(context.Background(), ks)
+		_, err = service.WaterKey.AddSelfKey(context.Background(), ks)
 		if err != nil {
 			g.Log().Fatal(ctx, err)
 		}
@@ -59,9 +59,9 @@ func checkKeyPair(ctx context.Context) {
 	} else {
 		g.Log().Infof(ctx, "Got key pair: %s", k.GetKeyID())
 	}
-	k, _ = serviceWater.WaterKey.GetSelfKey(ctx) // refresh the key
+	k, _ = service.WaterKey.GetSelfKey(ctx) // refresh the key
 	if kp, err := k.GetPublicKey(); (err == nil) && (kp != nil) {
-		kid, err := serviceWater.GetKeyID(kp)
+		kid, err := service.GetKeyID(kp)
 		if (kid == "") || (err != nil) || (k.GetKeyID() != kid) {
 			g.Log().Warningf(ctx, "Key ID should be: %s", kid)
 			g.Log().Warningf(ctx, "but got         : %s", k.GetKeyID())

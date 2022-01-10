@@ -9,9 +9,9 @@ import (
 	"github.com/gogf/gf/v2/errors/gerror"
 )
 
-var WaterInvite = waterInviteService{}
+var WaterJoin = waterJoinService{}
 
-type waterInviteService struct{}
+type waterJoinService struct{}
 
 const (
 	INVITE_RETURN_CODE_SUCCESS            = 0 // success
@@ -25,18 +25,18 @@ const (
 	INVITE_RETURN_CODE_BANNED             = 8 // key is banned
 )
 
-type WaterInviteStep1Pack struct {
+type WaterJoinStep1Pack struct {
 	Session                    string `json:"session"` // a 64 character random string
 	SenderPublicKeyFingerprint string `json:"sender"`
 	ReceiverPublicKey          string `json:"receiver"` // public key of the receiver(server)
 }
 
-type WaterInviteStep2Pack struct {
+type WaterJoinStep2Pack struct {
 	Session      string `json:"session"`
 	RandomString string `json:"random"` // a 32 character random string
 }
 
-func (*waterInviteService) MakeStep1Pack(session string, recvKey, sendKey *waterKey) *gvar.Var {
+func (*waterJoinService) MakeStep1Pack(session string, recvKey, sendKey *waterKey) *gvar.Var {
 	k, err := recvKey.GetPublicKey()
 	if err != nil {
 		return nil
@@ -45,7 +45,7 @@ func (*waterInviteService) MakeStep1Pack(session string, recvKey, sendKey *water
 	if err != nil {
 		return nil
 	}
-	r := WaterInviteStep1Pack{
+	r := WaterJoinStep1Pack{
 		Session:                    session,
 		ReceiverPublicKey:          ks,
 		SenderPublicKeyFingerprint: sendKey.GetKeyID(),
@@ -53,15 +53,15 @@ func (*waterInviteService) MakeStep1Pack(session string, recvKey, sendKey *water
 	return gvar.New(r)
 }
 
-func (*waterInviteService) MakeStep2Pack(session string, random string) *gvar.Var {
-	r := WaterInviteStep2Pack{
+func (*waterJoinService) MakeStep2Pack(session string, random string) *gvar.Var {
+	r := WaterJoinStep2Pack{
 		Session:      session,
 		RandomString: random,
 	}
 	return gvar.New(r)
 }
 
-func (s *waterInviteService) InviteStep1(c context.Context, senderPublicKey string) (encryptedReceiverPublicKey string, returnCode int) {
+func (s *waterJoinService) InviteStep1(c context.Context, senderPublicKey string) (encryptedReceiverPublicKey string, returnCode int) {
 	wrap := func(ctx context.Context, tx *gdb.TX) error {
 		encryptedReceiverPublicKey, returnCode = s.inviteStep1(ctx, tx, senderPublicKey)
 		if returnCode != INVITE_RETURN_CODE_SUCCESS {
@@ -74,7 +74,7 @@ func (s *waterInviteService) InviteStep1(c context.Context, senderPublicKey stri
 	})
 	return
 }
-func (s *waterInviteService) inviteStep1(ctx context.Context, tx *gdb.TX, senderPublicKey string) (string, int) {
+func (s *waterJoinService) inviteStep1(ctx context.Context, tx *gdb.TX, senderPublicKey string) (string, int) {
 	// ensure this key is valid
 	k, err := UnpackPublicKey(senderPublicKey, false)
 	if err != nil {
@@ -118,7 +118,7 @@ func (s *waterInviteService) inviteStep1(ctx context.Context, tx *gdb.TX, sender
 	}
 	return es, INVITE_RETURN_CODE_SUCCESS
 }
-func (s *waterInviteService) InviteStep2(c context.Context, encryptedRandomString string) (returnCode int) {
+func (s *waterJoinService) InviteStep2(c context.Context, encryptedRandomString string) (returnCode int) {
 	wrap := func(ctx context.Context, tx *gdb.TX) error {
 		returnCode = s.inviteStep2(ctx, tx, encryptedRandomString)
 		if returnCode != INVITE_RETURN_CODE_SUCCESS {
@@ -131,7 +131,7 @@ func (s *waterInviteService) InviteStep2(c context.Context, encryptedRandomStrin
 	})
 	return
 }
-func (s *waterInviteService) inviteStep2(ctx context.Context, tx *gdb.TX, encryptedRandomString string) int {
+func (s *waterJoinService) inviteStep2(ctx context.Context, tx *gdb.TX, encryptedRandomString string) int {
 	// get self key from database
 	selfWaterKey, err := WaterKey.GetSelfKey(ctx)
 	if err != nil {

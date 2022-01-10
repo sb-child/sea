@@ -4,13 +4,6 @@ import (
 	"github.com/gogf/gf/v2/frame/g"
 )
 
-// type HelloReq struct {
-// 	g.Meta `path:"/hello" tags:"Hello" method:"get" summary:"You first hello api"`
-// }
-// type HelloRes struct {
-// 	g.Meta `mime:"text/html" example:"string"`
-// }
-
 type VersionReq struct {
 	g.Meta `path:"/ver" method:"get"`
 }
@@ -18,18 +11,25 @@ type VersionRes struct {
 	g.Meta `mime:"application/json"`
 }
 
-type WaterApiInviteStep1Req struct {
-	g.Meta `path:"/auth/join/1" method:"post"`
+// water api auth join
+
+type WaterApiJoinStep1Req struct {
+	g.Meta          `path:"/auth/join/1" method:"post"`
+	SenderPublicKey string `json:"sender" v:"required"` // a 4096 bits rsa public key from sender(client)
 }
-type WaterApiInviteStep1Res struct {
-	g.Meta `mime:"application/json"`
+type WaterApiJoinStep1Res struct {
+	g.Meta                     `mime:"application/json"`
+	EncryptedReceiverPublicKey string `json:"receiver"` // a encrypted pack, sender can't be decrypted if haven't a private key
+	ReturnCode                 int    `json:"returnCode"`
 }
 
-type WaterApiInviteStep2Req struct {
-	g.Meta `path:"/auth/join/2" method:"post"`
+type WaterApiJoinStep2Req struct {
+	g.Meta                `path:"/auth/join/2" method:"post"`
+	EncryptedRandomString string `json:"random" v:"required"` // a encrypted pack for receiver
 }
-type WaterApiInviteStep2Res struct {
-	g.Meta `mime:"application/json"`
+type WaterApiJoinStep2Res struct {
+	g.Meta     `mime:"application/json"`
+	ReturnCode int `json:"returnCode"`
 }
 
 type AdminWaterAddReq struct {
