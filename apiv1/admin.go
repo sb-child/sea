@@ -1,8 +1,8 @@
 package apiv1
 
 import (
+	"context"
 	bgWater "sea/internal/background/water"
-	"sea/internal/utils"
 
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/ghttp"
@@ -12,21 +12,10 @@ var AdminWater = adminWater{}
 
 type adminWater struct{}
 
-type AddWaterReq struct {
-	URL string `json:"url" v:"required"`
-}
-type AddWaterResp struct {
-	URL string `json:"url"`
-}
-
-func (api *adminWater) AddWater(r *ghttp.Request) {
-	req := new(AddWaterReq)
-	if err := r.Parse(&req); err != nil {
-		utils.ParseError(r, err)
-	}
-	bgWater.WaterManager.AddWater(r.Context(), "")
-	g.Log().Debugf(r.Context(), "url: %s", req.URL)
-	r.Response.WriteJsonExit(AddWaterResp{URL: req.URL})
+func (api *adminWater) AddWater(ctx context.Context, req *AdminWaterAddReq) (*AdminWaterAddRes, error) {
+	bgWater.WaterManager.AddWater(ctx, req.URL)
+	g.Log().Debugf(ctx, "url: %s", req.URL)
+	return &AdminWaterAddRes{ReturnCode: 0}, nil
 }
 
 func (api *adminWater) EditWater(r *ghttp.Request) {

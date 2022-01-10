@@ -61,7 +61,7 @@ func (*waterJoinService) MakeStep2Pack(session string, random string) *gvar.Var 
 	return gvar.New(r)
 }
 
-func (s *waterJoinService) InviteStep1(c context.Context, senderPublicKey string) (encryptedReceiverPublicKey string, returnCode int) {
+func (s *waterJoinService) InviteStep1(c context.Context, senderPublicKey string) (encryptedReceiverPublicKey string, returnCode int, err error) {
 	wrap := func(ctx context.Context, tx *gdb.TX) error {
 		encryptedReceiverPublicKey, returnCode = s.inviteStep1(ctx, tx, senderPublicKey)
 		if returnCode != INVITE_RETURN_CODE_SUCCESS {
@@ -69,7 +69,7 @@ func (s *waterJoinService) InviteStep1(c context.Context, senderPublicKey string
 		}
 		return nil
 	}
-	dao.Water.Transaction(c, func(ctx context.Context, tx *gdb.TX) error {
+	err = dao.Water.Transaction(c, func(ctx context.Context, tx *gdb.TX) error {
 		return wrap(ctx, tx)
 	})
 	return
@@ -118,7 +118,7 @@ func (s *waterJoinService) inviteStep1(ctx context.Context, tx *gdb.TX, senderPu
 	}
 	return es, INVITE_RETURN_CODE_SUCCESS
 }
-func (s *waterJoinService) InviteStep2(c context.Context, encryptedRandomString string) (returnCode int) {
+func (s *waterJoinService) InviteStep2(c context.Context, encryptedRandomString string) (returnCode int, err error) {
 	wrap := func(ctx context.Context, tx *gdb.TX) error {
 		returnCode = s.inviteStep2(ctx, tx, encryptedRandomString)
 		if returnCode != INVITE_RETURN_CODE_SUCCESS {
@@ -126,7 +126,7 @@ func (s *waterJoinService) InviteStep2(c context.Context, encryptedRandomString 
 		}
 		return nil
 	}
-	dao.Water.Transaction(c, func(ctx context.Context, tx *gdb.TX) error {
+	err = dao.Water.Transaction(c, func(ctx context.Context, tx *gdb.TX) error {
 		return wrap(ctx, tx)
 	})
 	return

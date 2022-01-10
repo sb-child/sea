@@ -1,10 +1,10 @@
 package apiv1
 
 import (
+	"context"
 	"sea/internal/service"
-	"sea/internal/utils"
 
-	"github.com/gogf/gf/v2/net/ghttp"
+	"github.com/gogf/gf/v2/frame/g"
 )
 
 // join api
@@ -15,24 +15,17 @@ type waterJoinApi struct{}
 
 // invite steps
 
-func (api *waterJoinApi) Step1(r *ghttp.Request) {
-	req := new(WaterApiJoinStep1Req)
-	if err := r.Parse(&req); err != nil {
-		utils.ParseError(r, err)
-	}
-	k, c := service.WaterJoin.InviteStep1(r.Context(), req.SenderPublicKey)
-	r.Response.WriteJsonExit(WaterApiJoinStep1Res{
+func (api *waterJoinApi) Step1(ctx context.Context, req *WaterApiJoinStep1Req) (*WaterApiJoinStep1Res, error) {
+	g.Log().Debugf(ctx, "%v", req)
+	k, c, err := service.WaterJoin.InviteStep1(ctx, req.SenderPublicKey)
+	return &WaterApiJoinStep1Res{
 		EncryptedReceiverPublicKey: k,
 		ReturnCode:                 c,
-	})
+	}, err
 }
-func (*waterJoinApi) Step2(r *ghttp.Request) {
-	req := new(WaterApiJoinStep2Req)
-	if err := r.Parse(&req); err != nil {
-		utils.ParseError(r, err)
-	}
-	c := service.WaterJoin.InviteStep2(r.Context(), req.EncryptedRandomString)
-	r.Response.WriteJson(WaterApiJoinStep2Res{
+func (*waterJoinApi) Step2(ctx context.Context, req *WaterApiJoinStep2Req) (*WaterApiJoinStep2Res, error) {
+	c, err := service.WaterJoin.InviteStep2(ctx, req.EncryptedRandomString)
+	return &WaterApiJoinStep2Res{
 		ReturnCode: c,
-	})
+	}, err
 }

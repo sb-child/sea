@@ -2,10 +2,12 @@ server:
   address: ":8447"
   openapiPath: "/api.json"
   swaggerPath: "/swagger"
-
-logger:
-  level: "all"
-  stdout: true
+  accessLogEnabled: true
+  errorLogEnabled: true
+  DumpRouterMap: true
+  logger:
+    level: "all"
+    stdout: true
 
 database:
   default:

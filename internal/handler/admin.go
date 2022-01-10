@@ -15,7 +15,7 @@ var (
 type hAdmin struct{}
 
 func (h *hAdmin) WaterAdd(ctx context.Context, req *apiv1.AdminWaterAddReq) (res *apiv1.AdminWaterAddRes, err error) {
-	apiv1.AdminWater.AddWater(g.RequestFromCtx(ctx))
+	res, err = apiv1.AdminWater.AddWater(ctx, req)
 	return
 }
 

@@ -8,7 +8,8 @@ type VersionReq struct {
 	g.Meta `path:"/ver" method:"get"`
 }
 type VersionRes struct {
-	g.Meta `mime:"application/json"`
+	// g.Meta    `mime:"application/json"`
+	BuildInfo map[string]string `json:"info"`
 }
 
 // water api auth join
@@ -34,9 +35,11 @@ type WaterApiJoinStep2Res struct {
 
 type AdminWaterAddReq struct {
 	g.Meta `path:"/water/add" method:"post"`
+	URL    string `json:"url" v:"required"`
 }
 type AdminWaterAddRes struct {
-	g.Meta `mime:"application/json"`
+	g.Meta     `mime:"application/json"`
+	ReturnCode int `json:"returnCode"`
 }
 
 type AdminWaterDeleteReq struct {

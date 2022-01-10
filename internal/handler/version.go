@@ -15,6 +15,7 @@ var (
 type hVersion struct{}
 
 func (h *hVersion) GetVersion(ctx context.Context, req *apiv1.VersionReq) (res *apiv1.VersionRes, err error) {
-	apiv1.GetVersion.BuildInfo(g.RequestFromCtx(ctx))
+	res, err = apiv1.GetVersion.BuildInfo(ctx, req)
+	g.Log().Debug(ctx, "version", res)
 	return
 }
