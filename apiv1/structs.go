@@ -8,7 +8,7 @@ type VersionReq struct {
 	g.Meta `path:"/ver" method:"get"`
 }
 type VersionRes struct {
-	// g.Meta    `mime:"application/json"`
+	g.Meta    `mime:"application/json"`
 	BuildInfo map[string]string `json:"info"`
 }
 
@@ -16,7 +16,7 @@ type VersionRes struct {
 
 type WaterApiJoinStep1Req struct {
 	g.Meta          `path:"/auth/join/1" method:"post"`
-	SenderPublicKey string `json:"sender" v:"required"` // a 4096 bits rsa public key from sender(client)
+	SenderPublicKey string `p:"sender" v:"required"` // a 4096 bits rsa public key from sender(client)
 }
 type WaterApiJoinStep1Res struct {
 	g.Meta                     `mime:"application/json"`
@@ -26,7 +26,7 @@ type WaterApiJoinStep1Res struct {
 
 type WaterApiJoinStep2Req struct {
 	g.Meta                `path:"/auth/join/2" method:"post"`
-	EncryptedRandomString string `json:"random" v:"required"` // a encrypted pack for receiver
+	EncryptedRandomString string `p:"random" v:"required"` // a encrypted pack for receiver
 }
 type WaterApiJoinStep2Res struct {
 	g.Meta     `mime:"application/json"`
@@ -35,7 +35,7 @@ type WaterApiJoinStep2Res struct {
 
 type AdminWaterAddReq struct {
 	g.Meta `path:"/water/add" method:"post"`
-	URL    string `json:"url" v:"required"`
+	URL    string `p:"url" v:"required"`
 }
 type AdminWaterAddRes struct {
 	g.Meta     `mime:"application/json"`

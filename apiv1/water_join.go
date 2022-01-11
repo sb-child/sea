@@ -16,8 +16,8 @@ type waterJoinApi struct{}
 // invite steps
 
 func (api *waterJoinApi) Step1(ctx context.Context, req *WaterApiJoinStep1Req) (*WaterApiJoinStep1Res, error) {
-	g.Log().Debugf(ctx, "%v", req)
 	k, c, err := service.WaterJoin.InviteStep1(ctx, req.SenderPublicKey)
+	g.Log().Debugf(ctx, "k: %s, req: %s, err: %s, code: %d", k, req.SenderPublicKey, err, c)
 	return &WaterApiJoinStep1Res{
 		EncryptedReceiverPublicKey: k,
 		ReturnCode:                 c,

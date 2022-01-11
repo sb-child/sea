@@ -4,8 +4,6 @@ import (
 	"context"
 
 	"sea/apiv1"
-
-	"github.com/gogf/gf/v2/frame/g"
 )
 
 var (
@@ -15,7 +13,6 @@ var (
 type hWater struct{}
 
 func (h *hWater) Step1(ctx context.Context, req *apiv1.WaterApiJoinStep1Req) (res *apiv1.WaterApiJoinStep1Res, err error) {
-	g.Log().Debug(ctx, "water step1")
 	res, err = apiv1.WaterJoin.Step1(ctx, req)
 	return
 }

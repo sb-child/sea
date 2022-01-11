@@ -4,10 +4,10 @@ server:
   swaggerPath: "/swagger"
   accessLogEnabled: true
   errorLogEnabled: true
-  DumpRouterMap: true
-  logger:
-    level: "all"
-    stdout: true
+  errorStack: true
+  # logger:
+  #   level: "all"
+  #   stdout: false
 
 database:
   default:

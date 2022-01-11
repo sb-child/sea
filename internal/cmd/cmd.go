@@ -80,6 +80,7 @@ func checkKeyPair(ctx context.Context) {
 
 func routes(ctx context.Context, parser *gcmd.Parser) (err error) {
 	s := g.Server()
+	s.SetErrorStack(true)
 	rootURL, err := g.Config().Get(context.Background(), "water.root")
 	if err != nil {
 		rootURL = gvar.New("/")
@@ -93,6 +94,7 @@ func routes(ctx context.Context, parser *gcmd.Parser) (err error) {
 	// main router
 	root := s.Group(rootURL.String())
 	root.Middleware(
+		ghttp.MiddlewareHandlerResponse,
 		handler.HeaderMiddleware,
 	)
 	root.Bind(handler.Version)
@@ -102,7 +104,6 @@ func routes(ctx context.Context, parser *gcmd.Parser) (err error) {
 		group.Group("/admin", v1Admin)
 	})
 	s.Run()
-
 	return nil
 }
 
