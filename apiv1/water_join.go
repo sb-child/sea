@@ -3,8 +3,6 @@ package apiv1
 import (
 	"context"
 	"sea/internal/service"
-
-	"github.com/gogf/gf/v2/frame/g"
 )
 
 // join api
@@ -17,7 +15,6 @@ type waterJoinApi struct{}
 
 func (api *waterJoinApi) Step1(ctx context.Context, req *WaterApiJoinStep1Req) (*WaterApiJoinStep1Res, error) {
 	k, c, err := service.WaterJoin.InviteStep1(ctx, req.SenderPublicKey)
-	g.Log().Debugf(ctx, "k: %s, req: %s, err: %s, code: %d", k, req.SenderPublicKey, err, c)
 	return &WaterApiJoinStep1Res{
 		EncryptedReceiverPublicKey: k,
 		ReturnCode:                 c,

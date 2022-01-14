@@ -65,7 +65,7 @@ func (s *waterJoinService) InviteStep1(c context.Context, senderPublicKey string
 	wrap := func(ctx context.Context, tx *gdb.TX) error {
 		encryptedReceiverPublicKey, returnCode = s.inviteStep1(ctx, tx, senderPublicKey)
 		if returnCode != INVITE_RETURN_CODE_SUCCESS {
-			return gerror.Newf("InviteStep1: %d", returnCode)
+			return gerror.Newf("error: %d", returnCode)
 		}
 		return nil
 	}
@@ -122,7 +122,7 @@ func (s *waterJoinService) InviteStep2(c context.Context, encryptedRandomString 
 	wrap := func(ctx context.Context, tx *gdb.TX) error {
 		returnCode = s.inviteStep2(ctx, tx, encryptedRandomString)
 		if returnCode != INVITE_RETURN_CODE_SUCCESS {
-			return gerror.Newf("InviteStep2: %d", returnCode)
+			return gerror.Newf("error: %d", returnCode)
 		}
 		return nil
 	}

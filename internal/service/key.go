@@ -340,6 +340,9 @@ func PackPublicKey(key *rsa.PublicKey) (string, error) {
 func UnpackPublicKey(key string, check bool) (*rsa.PublicKey, error) {
 	// use x509 pkcs1 to unpack public key
 	block, _ := pem.Decode([]byte(key))
+	if block == nil {
+		return nil, gerror.New("invalid public key")
+	}
 	k, err := x509.ParsePKCS1PublicKey(block.Bytes)
 	if (err != nil) && check {
 		// maybe it's private key
