@@ -1,12 +1,14 @@
 package service
 
 import (
+	"bytes"
 	"context"
 	"crypto/rand"
 	"crypto/rsa"
 	"crypto/sha512"
 	"crypto/x509"
 	"encoding/pem"
+	"sea/internal/consts"
 	model "sea/internal/model/entity"
 	"sea/internal/service/internal/dao"
 
@@ -14,6 +16,7 @@ import (
 	"github.com/gogf/gf/v2/encoding/gbase64"
 	"github.com/gogf/gf/v2/encoding/gbinary"
 	"github.com/gogf/gf/v2/errors/gerror"
+	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/util/grand"
 )
 
@@ -27,18 +30,6 @@ type waterKey struct {
 	id  string
 	ctx *context.Context
 }
-
-const (
-	WATER_KEY_STATUS_OK              = 0
-	WATER_KEY_STATUS_WAIT_FOR_RESULT = 1
-	WATER_KEY_STATUS_BANNED          = 2
-	WATER_KEY_STATUS_NOT_FOUND       = 3
-	WATER_KEY_CHECK_OK               = 0
-	WATER_KEY_CHECK_TEST_FAILED      = 1
-	WATER_KEY_CHECK_WRONG_SIZE       = 2
-	WATER_KEY_CHECK_TYPE_ERROR       = 3
-	WATER_KEY_CHECK_EXPIRED          = 4
-)
 
 // GetSelfKeyID returns the self key ID (same as water ID)
 func (s *waterKeyService) GetSelfKey(ctx context.Context) (waterKey, error) {
@@ -56,7 +47,7 @@ func (s *waterKeyService) GetSelfKey(ctx context.Context) (waterKey, error) {
 // AddKey add a key to the database
 func (s *waterKeyService) AddKey(ctx context.Context, key *rsa.PublicKey) (waterKey, error) {
 	e := CheckPublicKey(key)
-	if e != WATER_KEY_CHECK_OK {
+	if e != consts.WATER_KEY_CHECK_OK {
 		return waterKey{}, gerror.New("key check failed")
 	}
 	kid, _ := GetKeyID(key)
@@ -78,7 +69,7 @@ func (s *waterKeyService) AddSelfKey(ctx context.Context, key *rsa.PrivateKey) (
 		return waterKey{}, gerror.New("key already exists")
 	}
 	e := CheckPrivateKey(key)
-	if e != WATER_KEY_CHECK_OK {
+	if e != consts.WATER_KEY_CHECK_OK {
 		return waterKey{}, gerror.New("key check failed")
 	}
 	kid, _ := GetKeyID(&key.PublicKey)
@@ -109,7 +100,7 @@ func (s *waterKeyService) GetKeyByID(ctx context.Context, id string) (waterKey, 
 
 func (s *waterKeyService) GetKey(ctx context.Context, k *rsa.PublicKey) (waterKey, error) {
 	e := CheckPublicKey(k)
-	if e != WATER_KEY_CHECK_OK {
+	if e != consts.WATER_KEY_CHECK_OK {
 		return waterKey{}, gerror.New("key check failed")
 	}
 	kid, err := GetKeyID(k)
@@ -191,15 +182,15 @@ func (s *waterKey) GetStatus() int {
 		).
 		Scan(m)
 	if err != nil {
-		return WATER_KEY_STATUS_NOT_FOUND
+		return consts.WATER_KEY_STATUS_NOT_FOUND
 	}
 	if m.IsBanned {
-		return WATER_KEY_STATUS_BANNED
+		return consts.WATER_KEY_STATUS_BANNED
 	}
 	if !m.IsReviewed {
-		return WATER_KEY_STATUS_WAIT_FOR_RESULT
+		return consts.WATER_KEY_STATUS_WAIT_FOR_RESULT
 	}
-	return WATER_KEY_STATUS_OK
+	return consts.WATER_KEY_STATUS_OK
 }
 
 func (s *waterKey) IsBanned() bool {
@@ -261,7 +252,19 @@ func (s *waterKey) EncryptBytes(m []byte) ([]byte, error) {
 		return nil, err
 	}
 	hash := sha512.New()
-	return rsa.EncryptOAEP(hash, rand.Reader, k, m, nil)
+	sz := k.Size() - 2*hash.Size() - 2
+	var buf bytes.Buffer
+	for len(m) > 0 {
+		if len(m) <= sz {
+			b, _ := rsa.EncryptOAEP(hash, rand.Reader, k, m, nil)
+			buf.Write(b)
+			break
+		}
+		b, _ := rsa.EncryptOAEP(hash, rand.Reader, k, m[:sz], nil)
+		buf.Write(b)
+		m = m[sz:]
+	}
+	return buf.Bytes(), nil
 }
 
 func (s *waterKey) DecryptBytes(m []byte) ([]byte, error) {
@@ -270,7 +273,25 @@ func (s *waterKey) DecryptBytes(m []byte) ([]byte, error) {
 		return nil, err
 	}
 	hash := sha512.New()
-	return rsa.DecryptOAEP(hash, rand.Reader, k, m, nil)
+	sz := k.Size()
+	var buf bytes.Buffer
+	for len(m) > 0 {
+		if len(m) <= sz {
+			b, err := rsa.DecryptOAEP(hash, rand.Reader, k, m, nil)
+			if err != nil {
+				return nil, err
+			}
+			buf.Write(b)
+			break
+		}
+		b, err := rsa.DecryptOAEP(hash, rand.Reader, k, m[:sz], nil)
+		if err != nil {
+			return nil, err
+		}
+		buf.Write(b)
+		m = m[sz:]
+	}
+	return buf.Bytes(), nil
 }
 
 func (s *waterKey) EncryptString(m string) (string, error) {
@@ -373,20 +394,22 @@ func UnpackPrivateKey(key string) (*rsa.PrivateKey, error) {
 }
 
 func CheckPublicKey(key *rsa.PublicKey) int {
-	if key.Size() != 4096 {
-		return WATER_KEY_CHECK_WRONG_SIZE
+	if v := key.Size(); v != (4096 / 8) { // 4096 bits = 4096/8 bytes
+		g.Log().Debugf(context.Background(), "wrong public key size: %d", v)
+		return consts.WATER_KEY_CHECK_WRONG_SIZE
 	}
-	return WATER_KEY_CHECK_OK
+	return consts.WATER_KEY_CHECK_OK
 }
 
 func CheckPrivateKey(key *rsa.PrivateKey) int {
 	if err := key.Validate(); err != nil {
-		return WATER_KEY_CHECK_TEST_FAILED
+		return consts.WATER_KEY_CHECK_TEST_FAILED
 	}
-	if key.Size() != (4096 / 8) { // 4096 bits = 4096/8 bytes
-		return WATER_KEY_CHECK_WRONG_SIZE
+	if v := key.Size(); v != (4096 / 8) { // 4096 bits = 4096/8 bytes
+		g.Log().Debugf(context.Background(), "wrong private key size: %d", v)
+		return consts.WATER_KEY_CHECK_WRONG_SIZE
 	}
-	return WATER_KEY_CHECK_OK
+	return consts.WATER_KEY_CHECK_OK
 }
 
 func GetKeyID(key *rsa.PublicKey) (string, error) {

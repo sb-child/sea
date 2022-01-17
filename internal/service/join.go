@@ -2,28 +2,18 @@ package service
 
 import (
 	"context"
+	"sea/internal/consts"
 	"sea/internal/service/internal/dao"
 
 	"github.com/gogf/gf/v2/container/gvar"
 	"github.com/gogf/gf/v2/database/gdb"
 	"github.com/gogf/gf/v2/errors/gerror"
+	"github.com/gogf/gf/v2/frame/g"
 )
 
 var WaterJoin = waterJoinService{}
 
 type waterJoinService struct{}
-
-const (
-	INVITE_RETURN_CODE_SUCCESS            = 0 // success
-	INVITE_RETURN_CODE_DECRYPTION_FAILED  = 1 // failed to decrypt
-	INVITE_RETURN_CODE_SESSION_NOT_FOUND  = 2 // session not found
-	INVITE_RETURN_CODE_SESSION_ERROR      = 3 // can't create session, needs a retry
-	INVITE_RETURN_CODE_BAD_KEY            = 4 // invalid key, expired, a private key, banned key or empty string
-	INVITE_RETURN_CODE_BAD_RANDOM_STRING  = 5 // random string is not 32 characters long
-	INVITE_RETURN_CODE_KEY_ALREADY_EXISTS = 6 // this key already exists
-	INVITE_RETURN_CODE_SERVER_ERROR       = 7 // server isn't ready
-	INVITE_RETURN_CODE_BANNED             = 8 // key is banned
-)
 
 type WaterJoinStep1Pack struct {
 	Session                    string `json:"session"` // a 64 character random string
@@ -61,10 +51,10 @@ func (*waterJoinService) MakeStep2Pack(session string, random string) *gvar.Var 
 	return gvar.New(r)
 }
 
-func (s *waterJoinService) InviteStep1(c context.Context, senderPublicKey string) (encryptedReceiverPublicKey string, returnCode int, err error) {
+func (s *waterJoinService) JoinStep1(c context.Context, senderPublicKey string) (encryptedReceiverPublicKey string, returnCode int, err error) {
 	wrap := func(ctx context.Context, tx *gdb.TX) error {
-		encryptedReceiverPublicKey, returnCode = s.inviteStep1(ctx, tx, senderPublicKey)
-		if returnCode != INVITE_RETURN_CODE_SUCCESS {
+		encryptedReceiverPublicKey, returnCode = s.joinStep1(ctx, tx, senderPublicKey)
+		if returnCode != consts.JOIN_RETURN_CODE_SUCCESS {
 			return gerror.Newf("error: %d", returnCode)
 		}
 		return nil
@@ -74,36 +64,38 @@ func (s *waterJoinService) InviteStep1(c context.Context, senderPublicKey string
 	})
 	return
 }
-func (s *waterJoinService) inviteStep1(ctx context.Context, tx *gdb.TX, senderPublicKey string) (string, int) {
+func (s *waterJoinService) joinStep1(ctx context.Context, tx *gdb.TX, senderPublicKey string) (string, int) {
 	// ensure this key is valid
 	k, err := UnpackPublicKey(senderPublicKey, false)
 	if err != nil {
-		return "", INVITE_RETURN_CODE_BAD_KEY
+		return "", consts.JOIN_RETURN_CODE_BAD_KEY
 	}
-	if CheckPublicKey(k) != WATER_KEY_CHECK_OK {
-		return "", INVITE_RETURN_CODE_BAD_KEY
+	if v := CheckPublicKey(k); v != consts.WATER_KEY_CHECK_OK {
+		g.Log().Debugf(ctx, "key check failed: %d", v)
+		return "", consts.JOIN_RETURN_CODE_BAD_KEY
 	}
 	// the key is valid, now check if it's banned
 	wk, err := WaterKey.GetKey(ctx, k)
 	// if the key is not found, it's not banned
 	// if the key is found, but the status is not banned, it's not banned
 	if (err == nil) && (wk.IsBanned()) {
-		return "", INVITE_RETURN_CODE_BANNED
+		return "", consts.JOIN_RETURN_CODE_BANNED
 	}
 	// add it to database
 	senderWaterKey, err := WaterKey.AddKey(ctx, k)
 	if err != nil {
-		return "", INVITE_RETURN_CODE_KEY_ALREADY_EXISTS
+		return "", consts.JOIN_RETURN_CODE_KEY_ALREADY_EXISTS
 	}
 	// bind the key to a new session
 	session, err := senderWaterKey.SetKeySessionRandom()
 	if err != nil {
-		return "", INVITE_RETURN_CODE_SESSION_ERROR
+		return "", consts.JOIN_RETURN_CODE_SESSION_ERROR
 	}
 	// get self key from database
 	selfWaterKey, err := WaterKey.GetSelfKey(ctx)
 	if err != nil {
-		return "", INVITE_RETURN_CODE_SERVER_ERROR
+		g.Log().Debugf(ctx, "unable to get self key: %v", err)
+		return "", consts.JOIN_RETURN_CODE_SERVER_ERROR
 	}
 	// encrypt and response
 	es, err := senderWaterKey.EncryptJsonBase64(
@@ -114,14 +106,16 @@ func (s *waterJoinService) inviteStep1(ctx context.Context, tx *gdb.TX, senderPu
 		),
 	)
 	if err != nil {
-		return "", INVITE_RETURN_CODE_SERVER_ERROR
+		g.Log().Debugf(ctx, "failed to encrypt: %s", gerror.Stack(err))
+		gerror.Stack(err)
+		return "", consts.JOIN_RETURN_CODE_SERVER_ERROR
 	}
-	return es, INVITE_RETURN_CODE_SUCCESS
+	return es, consts.JOIN_RETURN_CODE_SUCCESS
 }
-func (s *waterJoinService) InviteStep2(c context.Context, encryptedRandomString string) (returnCode int, err error) {
+func (s *waterJoinService) JoinStep2(c context.Context, encryptedRandomString string) (returnCode int, err error) {
 	wrap := func(ctx context.Context, tx *gdb.TX) error {
-		returnCode = s.inviteStep2(ctx, tx, encryptedRandomString)
-		if returnCode != INVITE_RETURN_CODE_SUCCESS {
+		returnCode = s.joinStep2(ctx, tx, encryptedRandomString)
+		if returnCode != consts.JOIN_RETURN_CODE_SUCCESS {
 			return gerror.Newf("error: %d", returnCode)
 		}
 		return nil
@@ -131,16 +125,16 @@ func (s *waterJoinService) InviteStep2(c context.Context, encryptedRandomString 
 	})
 	return
 }
-func (s *waterJoinService) inviteStep2(ctx context.Context, tx *gdb.TX, encryptedRandomString string) int {
+func (s *waterJoinService) joinStep2(ctx context.Context, tx *gdb.TX, encryptedRandomString string) int {
 	// get self key from database
 	selfWaterKey, err := WaterKey.GetSelfKey(ctx)
 	if err != nil {
-		return INVITE_RETURN_CODE_SERVER_ERROR
+		return consts.JOIN_RETURN_CODE_SERVER_ERROR
 	}
 	// decrypt
 	r, err := selfWaterKey.DecryptJsonBase64(encryptedRandomString)
 	if err != nil {
-		return INVITE_RETURN_CODE_DECRYPTION_FAILED
+		return consts.JOIN_RETURN_CODE_DECRYPTION_FAILED
 	}
 	_ = r // todo
 	return 0

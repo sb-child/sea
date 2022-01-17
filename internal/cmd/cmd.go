@@ -34,7 +34,7 @@ func welcome(ctx context.Context) {
 	g.Log().Info(ctx, "Starting the chat server - Sea ...")
 	buildInfo := gbuild.Info()
 	if buildInfo["gf"] == "" {
-		g.Log().Warning(ctx, "(debug build, use `gf build` to build for release)")
+		g.Log().Warning(ctx, "(debug build, use `gf build` for release)")
 	} else {
 		g.Log().Infof(ctx, "built at %s in %s with gf%s", buildInfo["time"], buildInfo["go"], buildInfo["gf"])
 		g.Log().Infof(ctx, "commit: %s", buildInfo["git"])
@@ -76,6 +76,9 @@ func checkKeyPair(ctx context.Context) {
 	} else {
 		g.Log().Fatal(ctx, err)
 	}
+	ks, _ := service.GenerateKey()
+	kss, _ := service.PackPublicKey(&ks.PublicKey)
+	g.Log().Debug(ctx, kss)
 }
 
 func routes(ctx context.Context, parser *gcmd.Parser) (err error) {
