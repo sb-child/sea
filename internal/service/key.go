@@ -12,12 +12,15 @@ import (
 	"sea/internal/consts"
 	model "sea/internal/model/entity"
 	"sea/internal/service/internal/dao"
+	"time"
 
 	"github.com/gogf/gf/v2/container/gvar"
 	"github.com/gogf/gf/v2/encoding/gbase64"
 	"github.com/gogf/gf/v2/encoding/gbinary"
 	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/frame/g"
+	"github.com/gogf/gf/v2/os/gtime"
+	"github.com/gogf/gf/v2/util/gconv"
 	"github.com/gogf/gf/v2/util/grand"
 )
 
@@ -251,6 +254,11 @@ func (s *waterKey) EncryptBytes(m []byte) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
+	now := time.Now()
+	ts := bytes.Buffer{}                    // 128 bits timestamp
+	ts.Write(gconv.Bytes(now.Unix()))       // 64 bits
+	ts.Write(gconv.Bytes(now.Nanosecond())) // 64 bits
+	m = append(ts.Bytes(), m...)
 	hash := sha512.New()
 	sz := k.Size() - 2*hash.Size() - 2
 	var buf bytes.Buffer
@@ -267,10 +275,10 @@ func (s *waterKey) EncryptBytes(m []byte) ([]byte, error) {
 	return buf.Bytes(), nil
 }
 
-func (s *waterKey) DecryptBytes(m []byte) ([]byte, error) {
+func (s *waterKey) DecryptBytes(m []byte) ([]byte, *gtime.Time, error) {
 	k, err := s.GetPrivateKey()
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	hash := sha512.New()
 	sz := k.Size()
@@ -279,19 +287,32 @@ func (s *waterKey) DecryptBytes(m []byte) ([]byte, error) {
 		if len(m) <= sz {
 			b, err := rsa.DecryptOAEP(hash, rand.Reader, k, m, nil)
 			if err != nil {
-				return nil, err
+				return nil, nil, err
 			}
 			buf.Write(b)
 			break
 		}
 		b, err := rsa.DecryptOAEP(hash, rand.Reader, k, m[:sz], nil)
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 		buf.Write(b)
 		m = m[sz:]
 	}
-	return buf.Bytes(), nil
+	md := buf.Bytes()
+	// 128 bits timestamp
+	if len(md) < 128 {
+		return nil, nil, gerror.New("invalid message")
+	}
+	ts := md[:128]
+	tsSecond := gconv.Int64(ts[:64])
+	tsNano := gconv.Int64(ts[64:])
+	t := gtime.NewFromTime(time.Unix(tsSecond, tsNano))
+	if t.IsZero() || t.After(gtime.Now()) {
+		return nil, nil, gerror.New("invalid timestamp")
+	}
+	md = md[128:]
+	return md, t, nil
 }
 
 func (s *waterKey) EncryptString(m string) (string, error) {
@@ -302,16 +323,16 @@ func (s *waterKey) EncryptString(m string) (string, error) {
 	return gbase64.EncodeToString(mBytes), nil
 }
 
-func (s *waterKey) DecryptString(m string) (string, error) {
+func (s *waterKey) DecryptString(m string) (string, *gtime.Time, error) {
 	mBytes, err := gbase64.DecodeString(m)
 	if err != nil {
-		return "", err
+		return "", nil, err
 	}
-	mBytes, err = s.DecryptBytes(mBytes)
+	mBytes, tm, err := s.DecryptBytes(mBytes)
 	if err != nil {
-		return "", err
+		return "", nil, err
 	}
-	return string(mBytes), nil
+	return string(mBytes), tm, nil
 }
 
 func (s *waterKey) EncryptJsonBase64(m *gvar.Var) (string, error) {
@@ -326,18 +347,18 @@ func (s *waterKey) EncryptJsonBase64(m *gvar.Var) (string, error) {
 	return gbase64.EncodeToString(c), nil
 }
 
-func (s *waterKey) DecryptJsonBase64(m string) (*gvar.Var, error) {
+func (s *waterKey) DecryptJsonBase64(m string) (*gvar.Var, *gtime.Time, error) {
 	b, err := gbase64.DecodeString(m)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-	c, err := s.DecryptBytes(b)
+	c, tm, err := s.DecryptBytes(b)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	r := gvar.New("")
 	err = r.UnmarshalJSON(c)
-	return r, err
+	return r, tm, err
 }
 
 // --- utils ---

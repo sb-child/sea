@@ -131,7 +131,7 @@ func (s *waterJoinService) joinStep2(ctx context.Context, tx *gdb.TX, encryptedR
 		return consts.JOIN_RETURN_CODE_SERVER_ERROR
 	}
 	// decrypt
-	r, err := selfWaterKey.DecryptJsonBase64(encryptedRandomString)
+	r, _, err := selfWaterKey.DecryptJsonBase64(encryptedRandomString) // todo
 	if err != nil {
 		return consts.JOIN_RETURN_CODE_DECRYPTION_FAILED
 	}
