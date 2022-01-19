@@ -8,6 +8,7 @@ import (
 	"crypto/sha512"
 	"crypto/x509"
 	"encoding/pem"
+	"fmt"
 	"sea/internal/consts"
 	model "sea/internal/model/entity"
 	"sea/internal/service/internal/dao"
@@ -116,6 +117,7 @@ func (s *waterKey) getKey() (string, error) {
 		Fields(dao.Water.Columns().Key).
 		Scan(m)
 	if err != nil {
+		fmt.Println(s.id)
 		return "", err
 	}
 	return m.Key, nil
@@ -161,14 +163,12 @@ func (s *waterKey) GetKeySession() (string, error) {
 }
 
 func (s *waterKey) SetKeySession(sessionId string) error {
-	_, err := dao.Water.Ctx(*s.ctx).Where(dao.Water.Columns().WaterId, s.id).Update(model.Water{
-		VerifySession: sessionId,
-	})
+	_, err := dao.Water.Ctx(*s.ctx).Where(dao.Water.Columns().WaterId, s.id).Data(dao.Water.Columns().VerifySession, sessionId).Update()
 	return err
 }
 
 func (s *waterKey) SetKeySessionRandom() (string, error) {
-	sessionId := grand.S(64, true)
+	sessionId := grand.S(64, false)
 	s.SetKeySession(sessionId)
 	return sessionId, nil
 }
@@ -205,7 +205,7 @@ func (s *waterKey) IsBanned() bool {
 }
 
 func (s *waterKey) SetBanned(b bool) error {
-	_, err := dao.Water.Ctx(*s.ctx).Where(dao.Water.Columns().WaterId, s.id).Update(model.Water{IsBanned: b})
+	_, err := dao.Water.Ctx(*s.ctx).Where(dao.Water.Columns().WaterId, s.id).Data(dao.Water.Columns().IsBanned, b).Update()
 	return err
 }
 
@@ -221,7 +221,7 @@ func (s *waterKey) IsReviewed() bool {
 }
 
 func (s *waterKey) SetReviewed(b bool) error {
-	_, err := dao.Water.Ctx(*s.ctx).Where(dao.Water.Columns().WaterId, s.id).Update(model.Water{IsReviewed: b})
+	_, err := dao.Water.Ctx(*s.ctx).Where(dao.Water.Columns().WaterId, s.id).Data(dao.Water.Columns().IsReviewed, b).Update()
 	return err
 }
 
@@ -237,7 +237,7 @@ func (s *waterKey) IsVerified() bool {
 }
 
 func (s *waterKey) SetVerified(b bool) error {
-	_, err := dao.Water.Ctx(*s.ctx).Where(dao.Water.Columns().WaterId, s.id).Update(model.Water{IsVerified: b})
+	_, err := dao.Water.Ctx(*s.ctx).Where(dao.Water.Columns().WaterId, s.id).Data(dao.Water.Columns().IsVerified, b).Update()
 	return err
 }
 

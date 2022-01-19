@@ -76,9 +76,9 @@ func checkKeyPair(ctx context.Context) {
 	} else {
 		g.Log().Fatal(ctx, err)
 	}
-	ks, _ := service.GenerateKey()
-	kss, _ := service.PackPublicKey(&ks.PublicKey)
-	g.Log().Debug(ctx, kss)
+	// ks, _ := service.GenerateKey()
+	// kss, _ := service.PackPublicKey(&ks.PublicKey)
+	// g.Log().Debug(ctx, kss)
 }
 
 func routes(ctx context.Context, parser *gcmd.Parser) (err error) {

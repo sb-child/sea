@@ -106,8 +106,7 @@ func (s *waterJoinService) joinStep1(ctx context.Context, tx *gdb.TX, senderPubl
 		),
 	)
 	if err != nil {
-		g.Log().Debugf(ctx, "failed to encrypt: %s", gerror.Stack(err))
-		gerror.Stack(err)
+		g.Log().Debugf(ctx, "failed to encrypt: %s", err.Error())
 		return "", consts.JOIN_RETURN_CODE_SERVER_ERROR
 	}
 	return es, consts.JOIN_RETURN_CODE_SUCCESS
