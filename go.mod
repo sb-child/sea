@@ -3,7 +3,8 @@ module sea
 go 1.17
 
 require (
-	github.com/gogf/gf/v2 v2.0.0-rc2.0.20220129134248-c3161d58fdad
+	github.com/gogf/gf/contrib/drivers/pgsql/v2 v2.0.0-20220209085115-a887cedb9969
+	github.com/gogf/gf/v2 v2.0.0-rc2.0.20220209085115-a887cedb9969
 	github.com/lib/pq v1.10.4
 )
 
@@ -29,7 +30,7 @@ require (
 	go.opentelemetry.io/otel/sdk v1.3.0 // indirect
 	go.opentelemetry.io/otel/trace v1.3.0 // indirect
 	golang.org/x/net v0.0.0-20220127200216-cd36cc0744dd // indirect
-	golang.org/x/sys v0.0.0-20220204135822-1c1b9b1eba6a // indirect
+	golang.org/x/sys v0.0.0-20220209214540-3681064d5158 // indirect
 	golang.org/x/text v0.3.8-0.20211105212822-18b340fc7af2 // indirect
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
 )
