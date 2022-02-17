@@ -21,4 +21,8 @@ const (
 	JOIN_RETURN_CODE_KEY_ALREADY_EXISTS // this key already exists
 	JOIN_RETURN_CODE_SERVER_ERROR       // server isn't ready
 	JOIN_RETURN_CODE_BANNED             // key is banned
+	// water stream
+	STREAM_TYPE_MESSAGE // sync messages
+	STREAM_TYPE_FILE    // sync files
+	STREAM_TYPE_SOCKET  // communicates in socket
 )

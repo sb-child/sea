@@ -33,6 +33,8 @@ type WaterApiJoinStep2Res struct {
 	ReturnCode int `json:"returnCode"`
 }
 
+// water stream
+
 type WaterApiTransferReq struct {
 	g.Meta  `path:"/t" method:"post"`
 	Session string `p:"session" v:"required"`
@@ -49,7 +51,7 @@ type WaterApiTransferRes struct {
 type WaterApiControlReq struct {
 	g.Meta  `path:"/c" method:"post"`
 	Session string `p:"session" v:"required"`
-	Origin  string `p:"origin" v:"required"`	
+	Origin  string `p:"origin" v:"required"`
 	Target  string `p:"target" v:"required"`
 	Type    string `p:"type" v:"required"`
 	Value   string `p:"value" v:"required"`
@@ -58,6 +60,8 @@ type WaterApiControlRes struct {
 	g.Meta     `mime:"application/json"`
 	ReturnCode int `json:"returnCode"`
 }
+
+// admin
 
 type AdminWaterAddReq struct {
 	g.Meta `path:"/water/add" method:"post"`
@@ -87,4 +91,16 @@ type AdminWaterQueryReq struct {
 }
 type AdminWaterQueryRes struct {
 	g.Meta `mime:"application/json"`
+}
+
+// user
+
+type UserLoginReq struct {
+	g.Meta   `path:"/login" method:"post"`
+	Username string `p:"username" v:"required"`
+	Password string `p:"password" v:"required"`
+}
+type UserLoginRes struct {
+	g.Meta     `mime:"application/json"`
+	ReturnCode int `json:"returnCode"`
 }

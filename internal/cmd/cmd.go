@@ -91,8 +91,14 @@ func routes(ctx context.Context, parser *gcmd.Parser) (err error) {
 	v1Water := func(group *ghttp.RouterGroup) {
 		group.Bind(handler.Water)
 	}
+	v1User := func(group *ghttp.RouterGroup) {
+		group.Bind(handler.User)
+	}
 	v1Admin := func(group *ghttp.RouterGroup) {
 		group.Bind(handler.Admin)
+	}
+	v1Stream := func(group *ghttp.RouterGroup) {
+		group.Bind(handler.WaterStream)
 	}
 	// main router
 	root := s.Group(rootURL.String())
@@ -103,8 +109,9 @@ func routes(ctx context.Context, parser *gcmd.Parser) (err error) {
 	root.Bind(handler.Version)
 	root.Group("/v1", func(group *ghttp.RouterGroup) {
 		group.Group("/water", v1Water)
-		// group.Group("/user", v1User)
+		group.Group("/user", v1User)
 		group.Group("/admin", v1Admin)
+		group.Group("/stream", v1Stream)
 	})
 	s.Run()
 	return nil
