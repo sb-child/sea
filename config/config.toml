@@ -1,0 +1,39 @@
+[compiler]
+name = "sea"
+version = "0.1"
+arch = "amd64"
+system = "linux"
+output = ""
+path = "./bin"
+extra = ""
+
+[compiler.VarMap]
+author = "sbchild"
+email = "self@sbchild.top"
+
+[server]
+address = ":12344"
+
+[water]
+root = "/water"
+
+
+[database]
+[[database.default]]
+host = "127.0.0.1"
+port = "5432"
+user = "test"
+pass = "FcpJhgJHP7myPcz"
+name = "sea"
+type = "pgsql"
+role = "master"
+debug = "true"
+dryrun = 0
+weight = "100"
+prefix = ""
+charset = "utf8"
+timezone = "Asia/Shanghai"
+maxIdle = "10"
+maxOpen = "100"
+maxLifetime = "30s"
+ctxStrict = false

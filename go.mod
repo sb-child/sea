@@ -3,8 +3,8 @@ module sea
 go 1.17
 
 require (
-	github.com/gogf/gf/contrib/drivers/pgsql/v2 v2.0.0-20220217095248-31ce55eb4dd5
-	github.com/gogf/gf/v2 v2.0.0-rc2.0.20220217095248-31ce55eb4dd5
+	github.com/gogf/gf/contrib/drivers/pgsql/v2 v2.0.0-20220217150450-7812f41b4395
+	github.com/gogf/gf/v2 v2.0.0-rc2.0.20220217150450-7812f41b4395
 	github.com/lib/pq v1.10.4
 )
 

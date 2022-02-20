@@ -32,11 +32,15 @@ github.com/gogf/gf/contrib/drivers/pgsql/v2 v2.0.0-20220217091509-255b50246060 h
 github.com/gogf/gf/contrib/drivers/pgsql/v2 v2.0.0-20220217091509-255b50246060/go.mod h1:rl2lOkswJJiBhmVEFHTObBTUr29yUCu6U1rRrmXmm6o=
 github.com/gogf/gf/contrib/drivers/pgsql/v2 v2.0.0-20220217095248-31ce55eb4dd5 h1:2HMnIoTFwHhKwb7wZ0vXG/3pzNEHZ2cWOeK9y7Ye5OE=
 github.com/gogf/gf/contrib/drivers/pgsql/v2 v2.0.0-20220217095248-31ce55eb4dd5/go.mod h1:rl2lOkswJJiBhmVEFHTObBTUr29yUCu6U1rRrmXmm6o=
+github.com/gogf/gf/contrib/drivers/pgsql/v2 v2.0.0-20220217150450-7812f41b4395 h1:CnZNm57WC1DwYfzuJJvJ0da1aGBOC8w/s9G1JdrWKbE=
+github.com/gogf/gf/contrib/drivers/pgsql/v2 v2.0.0-20220217150450-7812f41b4395/go.mod h1:rl2lOkswJJiBhmVEFHTObBTUr29yUCu6U1rRrmXmm6o=
 github.com/gogf/gf/v2 v2.0.0-rc/go.mod h1:apktt6TleWtCIwpz63vBqUnw8MX8gWKoZyxgDpXFtgM=
 github.com/gogf/gf/v2 v2.0.0-rc2.0.20220209085115-a887cedb9969 h1:a3UWPRI4yXhrGXX1Sd3fqsRs90O3yqAxzZfk0q5/6CM=
 github.com/gogf/gf/v2 v2.0.0-rc2.0.20220209085115-a887cedb9969/go.mod h1:wuTytvEeoPIPsc47sAT9SAQ35ipST+ZyJu5oX4X3TGA=
 github.com/gogf/gf/v2 v2.0.0-rc2.0.20220217095248-31ce55eb4dd5 h1:T1NyE/UnyUt0SNVna0DGw+uhwGLRYwEQ3VCJx/E39bg=
 github.com/gogf/gf/v2 v2.0.0-rc2.0.20220217095248-31ce55eb4dd5/go.mod h1:apktt6TleWtCIwpz63vBqUnw8MX8gWKoZyxgDpXFtgM=
+github.com/gogf/gf/v2 v2.0.0-rc2.0.20220217150450-7812f41b4395 h1:1tKzRqivC6fGi7GPXw2AWjlmMooDGc2xh4mFQbvANKc=
+github.com/gogf/gf/v2 v2.0.0-rc2.0.20220217150450-7812f41b4395/go.mod h1:apktt6TleWtCIwpz63vBqUnw8MX8gWKoZyxgDpXFtgM=
 github.com/golang/protobuf v1.2.0/go.mod h1:6lQm79b+lXiMfvg/cZm0SGofjICqVBUtrP5yJMmIC1U=
 github.com/golang/protobuf v1.4.0-rc.1/go.mod h1:ceaxUfeHdC40wWswd/P6IGgMaK3YpKi5j83Wpe3EHw8=
 github.com/golang/protobuf v1.4.0-rc.1.0.20200221234624-67d41d38c208/go.mod h1:xKAWHe0F5eneWXFV3EuXVDTCmh+JuBKY0li0aMyXATA=
