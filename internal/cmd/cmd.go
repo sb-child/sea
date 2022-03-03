@@ -33,11 +33,11 @@ func start(ctx context.Context, parser *gcmd.Parser) (err error) {
 func welcome(ctx context.Context) {
 	g.Log().Info(ctx, "Starting the chat server - Sea ...")
 	buildInfo := gbuild.Info()
-	if buildInfo["gf"] == "" {
+	if buildInfo.GoFrame == "" {
 		g.Log().Warning(ctx, "(debug build, use `gf build` for release)")
 	} else {
-		g.Log().Infof(ctx, "built at %s in %s with gf%s", buildInfo["time"], buildInfo["go"], buildInfo["gf"])
-		g.Log().Infof(ctx, "commit: %s", buildInfo["git"])
+		g.Log().Infof(ctx, "built at %s in %s with gf%s", buildInfo.Time, buildInfo.Golang, buildInfo.GoFrame)
+		g.Log().Infof(ctx, "commit: %s", buildInfo.Git)
 	}
 }
 
