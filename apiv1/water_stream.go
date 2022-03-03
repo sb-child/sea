@@ -1,20 +1,31 @@
 package apiv1
 
 import (
-	"context"
+	"github.com/gogf/gf/v2/frame/g"
 )
 
-var WaterStream = waterStreamApi{}
-
-type waterStreamApi struct{}
-
-func (api *waterStreamApi) Transfer(ctx context.Context, req *WaterApiTransferReq) (*WaterApiTransferRes, error) {
-	return &WaterApiTransferRes{
-		ReturnCode: 0,
-	}, nil
+type WaterApiTransferReq struct {
+	g.Meta  `path:"/t" method:"post"`
+	Session string `p:"session" v:"required"`
+	Origin  string `p:"origin" v:"required"`
+	Next    string `p:"next" v:"required"`
+	Target  string `p:"target" v:"required"`
+	Type    string `p:"type" v:"required"`
+	Value   string `p:"value" v:"required"`
 }
-func (*waterStreamApi) Control(ctx context.Context, req *WaterApiControlReq) (*WaterApiControlRes, error) {
-	return &WaterApiControlRes{
-		ReturnCode: 0,
-	}, nil
+type WaterApiTransferRes struct {
+	g.Meta     `mime:"application/json"`
+	ReturnCode int `json:"returnCode"`
+}
+type WaterApiControlReq struct {
+	g.Meta  `path:"/c" method:"post"`
+	Session string `p:"session" v:"required"`
+	Origin  string `p:"origin" v:"required"`
+	Target  string `p:"target" v:"required"`
+	Type    string `p:"type" v:"required"`
+	Value   string `p:"value" v:"required"`
+}
+type WaterApiControlRes struct {
+	g.Meta     `mime:"application/json"`
+	ReturnCode int `json:"returnCode"`
 }

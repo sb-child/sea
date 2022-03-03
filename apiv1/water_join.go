@@ -1,28 +1,24 @@
 package apiv1
 
 import (
-	"context"
-	"sea/internal/service"
+	"github.com/gogf/gf/v2/frame/g"
 )
 
-// join api
-
-var WaterJoin = waterJoinApi{}
-
-type waterJoinApi struct{}
-
-// invite steps
-
-func (api *waterJoinApi) Step1(ctx context.Context, req *WaterApiJoinStep1Req) (*WaterApiJoinStep1Res, error) {
-	k, c, err := service.WaterJoin.JoinStep1(ctx, req.SenderPublicKey)
-	return &WaterApiJoinStep1Res{
-		EncryptedReceiverPublicKey: k,
-		ReturnCode:                 c,
-	}, err
+type WaterApiJoinStep1Req struct {
+	g.Meta          `path:"/auth/join/1" method:"post"`
+	SenderPublicKey string `p:"sender" v:"required"` // a 4096 bits rsa public key from sender(client)
 }
-func (*waterJoinApi) Step2(ctx context.Context, req *WaterApiJoinStep2Req) (*WaterApiJoinStep2Res, error) {
-	c, err := service.WaterJoin.JoinStep2(ctx, req.EncryptedRandomString)
-	return &WaterApiJoinStep2Res{
-		ReturnCode: c,
-	}, err
+type WaterApiJoinStep1Res struct {
+	g.Meta                     `mime:"application/json"`
+	EncryptedReceiverPublicKey string `json:"receiver"` // a encrypted pack, sender can't be decrypted if haven't a private key
+	ReturnCode                 int    `json:"returnCode"`
+}
+
+type WaterApiJoinStep2Req struct {
+	g.Meta                `path:"/auth/join/2" method:"post"`
+	EncryptedRandomString string `p:"random" v:"required"` // a encrypted pack for receiver
+}
+type WaterApiJoinStep2Res struct {
+	g.Meta     `mime:"application/json"`
+	ReturnCode int `json:"returnCode"`
 }
