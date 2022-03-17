@@ -1,30 +1,35 @@
 package apiv1
 
 import (
-	"context"
-	bgWater "sea/internal/background/water"
-
 	"github.com/gogf/gf/v2/frame/g"
 )
 
-var AdminWater = adminWater{}
-
-type adminWater struct{}
-
-func (api *adminWater) AddWater(ctx context.Context, req *AdminWaterAddReq) (*AdminWaterAddRes, error) {
-	bgWater.WaterManager.AddWater(ctx, req.URL)
-	g.Log().Debugf(ctx, "url: %s", req.URL)
-	return &AdminWaterAddRes{ReturnCode: 0}, nil
+type AdminWaterAddReq struct {
+	g.Meta `path:"/water/add" method:"post"`
+	URL    string `p:"url" v:"required"`
+}
+type AdminWaterAddRes struct {
+	g.Meta     `mime:"application/json"`
+	ReturnCode int `json:"returnCode"`
 }
 
-func (api *adminWater) EditWater(ctx context.Context, req *AdminWaterEditReq) (*AdminWaterEditRes, error) {
-	return &AdminWaterEditRes{}, nil
+type AdminWaterDeleteReq struct {
+	g.Meta `path:"/water/delete" method:"post"`
+}
+type AdminWaterDeleteRes struct {
+	g.Meta `mime:"application/json"`
 }
 
-func (api *adminWater) DeleteWater(ctx context.Context, req *AdminWaterDeleteReq) (*AdminWaterDeleteRes, error) {
-	return &AdminWaterDeleteRes{}, nil
+type AdminWaterEditReq struct {
+	g.Meta `path:"/water/edit" method:"post"`
+}
+type AdminWaterEditRes struct {
+	g.Meta `mime:"application/json"`
 }
 
-func (api *adminWater) QueryWater(ctx context.Context, req *AdminWaterQueryReq) (*AdminWaterQueryRes, error) {
-	return &AdminWaterQueryRes{}, nil
+type AdminWaterQueryReq struct {
+	g.Meta `path:"/water/query" method:"post"`
+}
+type AdminWaterQueryRes struct {
+	g.Meta `mime:"application/json"`
 }

@@ -1,23 +1,13 @@
 package apiv1
 
 import (
-	"context"
-
-	"github.com/gogf/gf/v2/os/gbuild"
+	"github.com/gogf/gf/v2/frame/g"
 )
 
-var GetVersion = getVersionApi{}
-
-type getVersionApi struct{}
-
-func (*getVersionApi) BuildInfo(ctx context.Context, req *VersionReq) (*VersionRes, error) {
-	buildInfo := map[string]string{
-		"commit": gbuild.Info().Git,
-		"time":   gbuild.Info().Time,
-		"gf":     gbuild.Info().GoFrame,
-		"go":     gbuild.Info().Golang,
-	}
-	return &VersionRes{
-		BuildInfo: buildInfo,
-	}, nil
+type VersionReq struct {
+	g.Meta `path:"/ver" method:"get"`
+}
+type VersionRes struct {
+	g.Meta    `mime:"application/json"`
+	BuildInfo map[string]string `json:"info"`
 }

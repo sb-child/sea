@@ -5,7 +5,7 @@ import (
 
 	"sea/apiv1"
 
-	"github.com/gogf/gf/v2/frame/g"
+	"github.com/gogf/gf/v2/os/gbuild"
 )
 
 var (
@@ -15,7 +15,13 @@ var (
 type hVersion struct{}
 
 func (h *hVersion) GetVersion(ctx context.Context, req *apiv1.VersionReq) (res *apiv1.VersionRes, err error) {
-	res, err = apiv1.GetVersion.BuildInfo(ctx, req)
-	g.Log().Debug(ctx, "version", res)
-	return
+	buildInfo := map[string]string{
+		"commit": gbuild.Info().Git,
+		"time":   gbuild.Info().Time,
+		"gf":     gbuild.Info().GoFrame,
+		"go":     gbuild.Info().Golang,
+	}
+	return &apiv1.VersionRes{
+		BuildInfo: buildInfo,
+	}, nil
 }
