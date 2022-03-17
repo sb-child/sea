@@ -3,8 +3,8 @@ module sea
 go 1.17
 
 require (
-	github.com/gogf/gf/contrib/drivers/pgsql/v2 v2.0.0-20220302131516-4e2d3781455d
-	github.com/gogf/gf/v2 v2.0.0-rc3.0.20220302131516-4e2d3781455d
+	github.com/gogf/gf/contrib/drivers/pgsql/v2 v2.0.0-20220314113956-2eec1bc61acf
+	github.com/gogf/gf/v2 v2.0.4
 	github.com/lib/pq v1.10.4
 )
 
@@ -26,11 +26,11 @@ require (
 	github.com/mattn/go-runewidth v0.0.13 // indirect
 	github.com/olekukonko/tablewriter v0.0.5 // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
-	go.opentelemetry.io/otel v1.4.1 // indirect
-	go.opentelemetry.io/otel/sdk v1.4.1 // indirect
-	go.opentelemetry.io/otel/trace v1.4.1 // indirect
+	go.opentelemetry.io/otel v1.5.0 // indirect
+	go.opentelemetry.io/otel/sdk v1.5.0 // indirect
+	go.opentelemetry.io/otel/trace v1.5.0 // indirect
 	golang.org/x/net v0.0.0-20220225172249-27dd8689420f // indirect
-	golang.org/x/sys v0.0.0-20220227234510-4e6760a101f9 // indirect
+	golang.org/x/sys v0.0.0-20220317061510-51cd9980dadf // indirect
 	golang.org/x/text v0.3.8-0.20211105212822-18b340fc7af2 // indirect
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
 )
