@@ -20,11 +20,15 @@ github.com/go-logr/logr v1.2.0/go.mod h1:jdQByPbusPIv2/zmleS9BjJVeZ6kBagPoEUsqbV
 github.com/go-logr/logr v1.2.1/go.mod h1:jdQByPbusPIv2/zmleS9BjJVeZ6kBagPoEUsqbVz/1A=
 github.com/go-logr/logr v1.2.2 h1:ahHml/yUpnlb96Rp8HCvtYVPY8ZYpxq3g7UYchIYwbs=
 github.com/go-logr/logr v1.2.2/go.mod h1:jdQByPbusPIv2/zmleS9BjJVeZ6kBagPoEUsqbVz/1A=
+github.com/go-logr/logr v1.2.3 h1:2DntVwHkVopvECVRSlL5PSo9eG+cAkDCuckLubN+rq0=
+github.com/go-logr/logr v1.2.3/go.mod h1:jdQByPbusPIv2/zmleS9BjJVeZ6kBagPoEUsqbVz/1A=
 github.com/go-logr/stdr v1.2.0/go.mod h1:YkVgnZu1ZjjL7xTxrfm/LLZBfkhTqSR1ydtm6jTKKwI=
 github.com/go-logr/stdr v1.2.2 h1:hSWxHoqTgW2S2qGc0LTAI563KZ5YKYRhT3MFKZMbjag=
 github.com/go-logr/stdr v1.2.2/go.mod h1:mMo/vtBO5dYbehREoey6XUKy/eSumjCCveDpRre4VKE=
 github.com/go-redis/redis/v8 v8.11.4 h1:kHoYkfZP6+pe04aFTnhDH6GDROa5yJdHJVNxV3F46Tg=
 github.com/go-redis/redis/v8 v8.11.4/go.mod h1:2Z2wHZXdQpCDXEGzqMockDpNyYvi2l4Pxt6RJr792+w=
+github.com/go-redis/redis/v8 v8.11.5 h1:AcZZR7igkdvfVmQTPnu9WE37LRrO/YrBH5zWyjDC0oI=
+github.com/go-redis/redis/v8 v8.11.5/go.mod h1:gREzHqY1hg6oD9ngVRbLStwAWKhA0FEgq8Jd4h5lpwo=
 github.com/go-sql-driver/mysql v1.6.0 h1:BCTh4TKNUYmOmMUcQ3IipzF5prigylS7XXjEkfCHuOE=
 github.com/go-sql-driver/mysql v1.6.0/go.mod h1:DCzpHaOWr8IXmIStZouvnhqoel9Qv2LBy8hT2VhHyBg=
 github.com/go-task/slim-sprig v0.0.0-20210107165309-348f09dbbbc0/go.mod h1:fyg7847qk6SyHyPtNmDHnmrv/HOrqktSC+C9fM+CJOE=
@@ -38,6 +42,8 @@ github.com/gogf/gf/contrib/drivers/pgsql/v2 v2.0.0-20220302131516-4e2d3781455d h
 github.com/gogf/gf/contrib/drivers/pgsql/v2 v2.0.0-20220302131516-4e2d3781455d/go.mod h1:rl2lOkswJJiBhmVEFHTObBTUr29yUCu6U1rRrmXmm6o=
 github.com/gogf/gf/contrib/drivers/pgsql/v2 v2.0.0-20220314113956-2eec1bc61acf h1:cxbUioYdf2+y2st7+5q9LzPMcy1WJ99+F90YROe//SI=
 github.com/gogf/gf/contrib/drivers/pgsql/v2 v2.0.0-20220314113956-2eec1bc61acf/go.mod h1:rl2lOkswJJiBhmVEFHTObBTUr29yUCu6U1rRrmXmm6o=
+github.com/gogf/gf/contrib/drivers/pgsql/v2 v2.0.0-20220318035202-d7764e29684a h1:n7Embms7Ke2VF0aazyTqudSJdNjCkPVRM9B03l3aZYs=
+github.com/gogf/gf/contrib/drivers/pgsql/v2 v2.0.0-20220318035202-d7764e29684a/go.mod h1:rl2lOkswJJiBhmVEFHTObBTUr29yUCu6U1rRrmXmm6o=
 github.com/gogf/gf/v2 v2.0.0-rc/go.mod h1:apktt6TleWtCIwpz63vBqUnw8MX8gWKoZyxgDpXFtgM=
 github.com/gogf/gf/v2 v2.0.0-rc2.0.20220209085115-a887cedb9969 h1:a3UWPRI4yXhrGXX1Sd3fqsRs90O3yqAxzZfk0q5/6CM=
 github.com/gogf/gf/v2 v2.0.0-rc2.0.20220209085115-a887cedb9969/go.mod h1:wuTytvEeoPIPsc47sAT9SAQ35ipST+ZyJu5oX4X3TGA=
@@ -51,6 +57,8 @@ github.com/gogf/gf/v2 v2.0.0-rc3.0.20220302131516-4e2d3781455d h1:l/BqVLFWAxhU5U
 github.com/gogf/gf/v2 v2.0.0-rc3.0.20220302131516-4e2d3781455d/go.mod h1:apktt6TleWtCIwpz63vBqUnw8MX8gWKoZyxgDpXFtgM=
 github.com/gogf/gf/v2 v2.0.4 h1:m5F/f2lX+etXhI6rAQCR6szQoHE1ulAYlIvH0UXa2wM=
 github.com/gogf/gf/v2 v2.0.4/go.mod h1:apktt6TleWtCIwpz63vBqUnw8MX8gWKoZyxgDpXFtgM=
+github.com/gogf/gf/v2 v2.0.5-0.20220318035202-d7764e29684a h1:G2xObMY70cGEOEC+HKSmwz+K5cE/TE+mLkjGTzYnE/c=
+github.com/gogf/gf/v2 v2.0.5-0.20220318035202-d7764e29684a/go.mod h1:apktt6TleWtCIwpz63vBqUnw8MX8gWKoZyxgDpXFtgM=
 github.com/golang/protobuf v1.2.0/go.mod h1:6lQm79b+lXiMfvg/cZm0SGofjICqVBUtrP5yJMmIC1U=
 github.com/golang/protobuf v1.4.0-rc.1/go.mod h1:ceaxUfeHdC40wWswd/P6IGgMaK3YpKi5j83Wpe3EHw8=
 github.com/golang/protobuf v1.4.0-rc.1.0.20200221234624-67d41d38c208/go.mod h1:xKAWHe0F5eneWXFV3EuXVDTCmh+JuBKY0li0aMyXATA=
@@ -172,6 +180,8 @@ golang.org/x/sys v0.0.0-20220227234510-4e6760a101f9 h1:nhht2DYV/Sn3qOayu8lM+cU1i
 golang.org/x/sys v0.0.0-20220227234510-4e6760a101f9/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
 golang.org/x/sys v0.0.0-20220317061510-51cd9980dadf h1:Fm4IcnUL803i92qDlmB0obyHmosDrxZWxJL3gIeNqOw=
 golang.org/x/sys v0.0.0-20220317061510-51cd9980dadf/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
+golang.org/x/sys v0.0.0-20220318055525-2edf467146b5 h1:saXMvIOKvRFwbOMicHXr0B1uwoxq9dGmLe5ExMES6c4=
+golang.org/x/sys v0.0.0-20220318055525-2edf467146b5/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
 golang.org/x/term v0.0.0-20201126162022-7de9c90e9dd1/go.mod h1:bj7SfCRtBDWHUb9snDiAeCFNEtKQo2Wmx5Cou7ajbmo=
 golang.org/x/term v0.0.0-20210927222741-03fcf44c2211/go.mod h1:jbD1KX2456YbFQfuXm/mYQcufACuNUgVhRMnK/tPxf8=
 golang.org/x/text v0.3.0/go.mod h1:NqM8EUOU14njkJ3fqMW+pc6Ldnwhi/IjpwHt7yyuwOQ=
