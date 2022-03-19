@@ -1,6 +1,6 @@
 module sea
 
-go 1.17
+go 1.18
 
 require (
 	github.com/gogf/gf/contrib/drivers/pgsql/v2 v2.0.0-20220318035202-d7764e29684a
