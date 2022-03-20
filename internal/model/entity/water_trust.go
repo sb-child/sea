@@ -8,12 +8,11 @@ import (
 	"github.com/gogf/gf/v2/os/gtime"
 )
 
-// Water is the golang structure for table water.
-type Water struct {
+// WaterTrust is the golang structure for table water_trust.
+type WaterTrust struct {
 	Id        int64       `json:"id"        description:""`
 	CreatedAt *gtime.Time `json:"createdAt" description:""`
 	UpdatedAt *gtime.Time `json:"updatedAt" description:""`
 	WaterId   string      `json:"waterId"   description:""`
-	WaterKey  string      `json:"waterKey"  description:""`
-	Role      int         `json:"role"      description:""`
+	IsBanned  bool        `json:"isBanned"  description:""`
 }

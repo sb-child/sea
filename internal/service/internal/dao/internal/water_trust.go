@@ -10,62 +10,62 @@ import (
 	"github.com/gogf/gf/v2/frame/g"
 )
 
-// WaterRouteDao is the data access object for table water_route.
-type WaterRouteDao struct {
+// WaterTrustDao is the data access object for table water_trust.
+type WaterTrustDao struct {
 	table   string            // table is the underlying table name of the DAO.
 	group   string            // group is the database configuration group name of current DAO.
-	columns WaterRouteColumns // columns contains all the column names of Table for convenient usage.
+	columns WaterTrustColumns // columns contains all the column names of Table for convenient usage.
 }
 
-// WaterRouteColumns defines and stores column names for table water_route.
-type WaterRouteColumns struct {
-	WaterTo  string //
-	Route    string //
-	Delay    string //
-	Disabled string //
-	Skipped  string //
+// WaterTrustColumns defines and stores column names for table water_trust.
+type WaterTrustColumns struct {
+	Id        string //
+	CreatedAt string //
+	UpdatedAt string //
+	WaterId   string //
+	IsBanned  string //
 }
 
-//  waterRouteColumns holds the columns for table water_route.
-var waterRouteColumns = WaterRouteColumns{
-	WaterTo:  "water_to",
-	Route:    "route",
-	Delay:    "delay",
-	Disabled: "disabled",
-	Skipped:  "skipped",
+//  waterTrustColumns holds the columns for table water_trust.
+var waterTrustColumns = WaterTrustColumns{
+	Id:        "id",
+	CreatedAt: "created_at",
+	UpdatedAt: "updated_at",
+	WaterId:   "water_id",
+	IsBanned:  "is_banned",
 }
 
-// NewWaterRouteDao creates and returns a new DAO object for table data access.
-func NewWaterRouteDao() *WaterRouteDao {
-	return &WaterRouteDao{
+// NewWaterTrustDao creates and returns a new DAO object for table data access.
+func NewWaterTrustDao() *WaterTrustDao {
+	return &WaterTrustDao{
 		group:   "default",
-		table:   "water_route",
-		columns: waterRouteColumns,
+		table:   "water_trust",
+		columns: waterTrustColumns,
 	}
 }
 
 // DB retrieves and returns the underlying raw database management object of current DAO.
-func (dao *WaterRouteDao) DB() gdb.DB {
+func (dao *WaterTrustDao) DB() gdb.DB {
 	return g.DB(dao.group)
 }
 
 // Table returns the table name of current dao.
-func (dao *WaterRouteDao) Table() string {
+func (dao *WaterTrustDao) Table() string {
 	return dao.table
 }
 
 // Columns returns all column names of current dao.
-func (dao *WaterRouteDao) Columns() WaterRouteColumns {
+func (dao *WaterTrustDao) Columns() WaterTrustColumns {
 	return dao.columns
 }
 
 // Group returns the configuration group name of database of current dao.
-func (dao *WaterRouteDao) Group() string {
+func (dao *WaterTrustDao) Group() string {
 	return dao.group
 }
 
 // Ctx creates and returns the Model for current DAO, It automatically sets the context for current operation.
-func (dao *WaterRouteDao) Ctx(ctx context.Context) *gdb.Model {
+func (dao *WaterTrustDao) Ctx(ctx context.Context) *gdb.Model {
 	return dao.DB().Model(dao.table).Safe().Ctx(ctx)
 }
 
@@ -75,6 +75,6 @@ func (dao *WaterRouteDao) Ctx(ctx context.Context) *gdb.Model {
 //
 // Note that, you should not Commit or Rollback the transaction in function f
 // as it is automatically handled by this function.
-func (dao *WaterRouteDao) Transaction(ctx context.Context, f func(ctx context.Context, tx *gdb.TX) error) (err error) {
+func (dao *WaterTrustDao) Transaction(ctx context.Context, f func(ctx context.Context, tx *gdb.TX) error) (err error) {
 	return dao.Ctx(ctx).Transaction(ctx, f)
 }

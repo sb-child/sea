@@ -9,13 +9,12 @@ import (
 	"github.com/gogf/gf/v2/os/gtime"
 )
 
-// Water is the golang structure of table water for DAO operations like Where/Data.
-type Water struct {
-	g.Meta    `orm:"table:water, do:true"`
+// WaterTrust is the golang structure of table water_trust for DAO operations like Where/Data.
+type WaterTrust struct {
+	g.Meta    `orm:"table:water_trust, do:true"`
 	Id        interface{} //
 	CreatedAt *gtime.Time //
 	UpdatedAt *gtime.Time //
 	WaterId   interface{} //
-	WaterKey  interface{} //
-	Role      interface{} //
+	IsBanned  interface{} //
 }

@@ -4,9 +4,9 @@
 
 package entity
 
-// WaterPing is the golang structure for table water_ping.
-type WaterPing struct {
-	WaterFrom string `json:"waterFrom" description:""`
-	WaterTo   string `json:"waterTo"   description:""`
-	Delay     int64  `json:"delay"     description:""`
+// Users is the golang structure for table users.
+type Users struct {
+	Id       string `json:"id"       description:""`
+	Username string `json:"username" description:""`
+	Password string `json:"password" description:""`
 }
