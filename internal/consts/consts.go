@@ -26,3 +26,7 @@ const (
 	STREAM_TYPE_FILE    // sync files
 	STREAM_TYPE_SOCKET  // communicates in socket
 )
+
+const (
+	ENUM_WATER_KEY_SELF = 0
+)
