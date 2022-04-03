@@ -88,6 +88,9 @@ func routes(ctx context.Context, parser *gcmd.Parser) (err error) {
 	if err != nil {
 		rootURL = gvar.New("/")
 	}
+	v1Info := func(group *ghttp.RouterGroup) {
+		group.Bind(handler.Info)
+	}
 	v1Water := func(group *ghttp.RouterGroup) {
 		group.Bind(handler.Water)
 	}
@@ -108,6 +111,7 @@ func routes(ctx context.Context, parser *gcmd.Parser) (err error) {
 	)
 	root.Bind(handler.Version)
 	root.Group("/v1", func(group *ghttp.RouterGroup) {
+		group.Group("/info", v1Info)
 		group.Group("/water", v1Water)
 		group.Group("/user", v1User)
 		group.Group("/admin", v1Admin)
