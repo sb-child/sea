@@ -3,7 +3,7 @@ package cmd
 import (
 	"context"
 	bg "sea/internal/background"
-	"sea/internal/handler"
+	"sea/internal/controller"
 	"sea/internal/service"
 
 	_ "github.com/lib/pq"
@@ -89,27 +89,27 @@ func routes(ctx context.Context, parser *gcmd.Parser) (err error) {
 		rootURL = gvar.New("/")
 	}
 	v1Info := func(group *ghttp.RouterGroup) {
-		group.Bind(handler.Info)
+		group.Bind(controller.Info)
 	}
 	v1Water := func(group *ghttp.RouterGroup) {
-		group.Bind(handler.Water)
+		group.Bind(controller.Water)
 	}
 	v1User := func(group *ghttp.RouterGroup) {
-		group.Bind(handler.User)
+		group.Bind(controller.User)
 	}
 	v1Admin := func(group *ghttp.RouterGroup) {
-		group.Bind(handler.Admin)
+		group.Bind(controller.Admin)
 	}
 	v1Stream := func(group *ghttp.RouterGroup) {
-		group.Bind(handler.WaterStream)
+		group.Bind(controller.WaterStream)
 	}
 	// main router
 	root := s.Group(rootURL.String())
 	root.Middleware(
 		ghttp.MiddlewareHandlerResponse,
-		handler.HeaderMiddleware,
+		controller.HeaderMiddleware,
 	)
-	root.Bind(handler.Version)
+	root.Bind(controller.Version)
 	root.Group("/v1", func(group *ghttp.RouterGroup) {
 		group.Group("/info", v1Info)
 		group.Group("/water", v1Water)
