@@ -2,9 +2,13 @@
 
 (正在开发中，暂不可用)
 
-> 海纳百川! The sea contains hundreds of rivers!
+> Say freely like sea! | 像大海一样畅所欲言!
 
-轻量级分布式即时通讯服务端
+轻量级分布式数据传输隧道
+
+## 目的
++ fuck GFW, 打造全新的可随意部署的分布式数据传输隧道
+
 
 ## 功能
 
