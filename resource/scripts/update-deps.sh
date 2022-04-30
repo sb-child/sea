@@ -10,6 +10,9 @@ git stash
 
 # Update dependencies
 go get -u -v github.com/gogf/gf/contrib/drivers/pgsql/v2@master
+go get -u -v github.com/gogf/gf/v2/encoding/ghtml@master
+go get -u -v github.com/gogf/gf/v2/encoding/ghttp@master
+go get -u -v github.com/gogf/gf/v2/encoding/gclient@master
 go get -u -v github.com/gogf/gf/v2@master
 go get -u -v all
 

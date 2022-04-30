@@ -1,8 +1,8 @@
 package main
 
 import (
-	_ "sea/internal/packed"
 	_ "github.com/gogf/gf/contrib/drivers/pgsql/v2"
+	_ "sea/internal/packed"
 
 	"sea/internal/cmd"
 
