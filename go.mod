@@ -3,8 +3,8 @@ module sea
 go 1.18
 
 require (
-	github.com/gogf/gf/contrib/drivers/pgsql/v2 v2.0.0-20220429061354-9ad929232167
-	github.com/gogf/gf/v2 v2.0.7-0.20220429061354-9ad929232167
+	github.com/gogf/gf/contrib/drivers/pgsql/v2 v2.0.0-20220507100651-32f33b9f8c08
+	github.com/gogf/gf/v2 v2.0.7-0.20220507100651-32f33b9f8c08
 	github.com/lib/pq v1.10.5
 )
 
@@ -21,7 +21,6 @@ require (
 	github.com/go-sql-driver/mysql v1.6.0 // indirect
 	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/grokify/html-strip-tags-go v0.0.1 // indirect
-	github.com/longbridgeapp/sqlparser v0.3.1 // indirect
 	github.com/mattn/go-colorable v0.1.12 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect
 	github.com/mattn/go-runewidth v0.0.13 // indirect
@@ -31,7 +30,7 @@ require (
 	go.opentelemetry.io/otel/sdk v1.7.0 // indirect
 	go.opentelemetry.io/otel/trace v1.7.0 // indirect
 	golang.org/x/net v0.0.0-20220325170049-de3da57026de // indirect
-	golang.org/x/sys v0.0.0-20220429233432-b5fbb4746d32 // indirect
+	golang.org/x/sys v0.0.0-20220503163025-988cb79eb6c6 // indirect
 	golang.org/x/text v0.3.8-0.20211105212822-18b340fc7af2 // indirect
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
 )
