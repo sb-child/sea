@@ -1,7 +1,9 @@
 package io
 
+import "sea/internal/consts"
+
 type EncryptStage interface {
-	SetConnectionRoute()
+	SetConnectionRoute(ConnectionRoute)
 	SetMessageType()
 	SetMessageData()
 	Package()
@@ -15,7 +17,7 @@ type DecryptStage interface {
 	Unsignature()
 	Decrypt()
 	Unpackage()
-	GetConnectionRoute()
+	GetConnectionRoute() ConnectionRoute
 	GetMessageType()
 	GetMessageData()
 }
@@ -50,3 +52,10 @@ func (cr *ConnectionRoute) AddRelayHash(v [256]byte) *ConnectionRoute {
 	cr.RelayHash = append(cr.RelayHash, v)
 	return cr
 }
+
+type MessageType struct {
+	MajorType consts.IOMessageTypeMajor
+	MinorType consts.IOMessageTypeMinor
+}
+
+
