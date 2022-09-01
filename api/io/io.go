@@ -52,10 +52,21 @@ func (cr *ConnectionRoute) AddRelayHash(v [256]byte) *ConnectionRoute {
 	cr.RelayHash = append(cr.RelayHash, v)
 	return cr
 }
+func (cr *ConnectionRoute) IsValid() bool {
+	check1 := (cr.CurrentHash == cr.SenderHash) || (cr.CurrentHash == cr.ReceiverHash)
+	if check1 {
+		return true
+	}
+	check2 := false
+	for _, v := range cr.RelayHash {
+		if cr.CurrentHash == v {
+			check2 = true
+		}
+	}
+	return check2
+}
 
 type MessageType struct {
 	MajorType consts.IOMessageTypeMajor
 	MinorType consts.IOMessageTypeMinor
 }
-
-
