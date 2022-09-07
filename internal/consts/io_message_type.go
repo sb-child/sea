@@ -3,6 +3,8 @@ package consts
 type IOMessageTypeMajor uint64
 type IOMessageTypeMinor uint64
 
+const SERVER_ID_BYTES = 256 / 8
+
 // IOMessageTypeMajor
 const (
 
